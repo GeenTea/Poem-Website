@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Дизайн-токены.
+
+   Здесь установлен Tailwind v4: конфигурация живёт в CSS (@theme), отдельный
+   tailwind.config.ts не нужен. Всё, что объявлено в @theme, становится
+   утилитой: --color-glass-border даёт border-glass-border и т.д.
+
+   TODO: заполнить палитру, шрифты и переменные glassmorphism.
+--------------------------------------------------------------------------- */
+@theme {
+  /* --font-sans: ...; */
+  /* --color-ink-500: ...; */
+  /* --radius-glass: 1.25rem; */
+  /* --blur-glass: 16px; */
+}
+
+:root {
+  /* TODO: переменные светлой темы (фон, текст, стекло) */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* TODO: переменные тёмной темы */
+  }
+}
+
+@layer components {
+  /* TODO: .glass — фон, рамка, backdrop-filter, тень */
+}
