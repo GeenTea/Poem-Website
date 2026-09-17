@@ -6,7 +6,7 @@
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
-  moduleformat= "cjs"
+  moduleFormat= "cjs"
 }
 
 datasource db {
@@ -42,6 +42,8 @@ model User {
 
   poems Poem[] @relation("PostAuthor")
   sessions Session[]
+  comments Comment[]
+  likes Likes[]
 }
 
 model Poem {
@@ -58,6 +60,9 @@ model Poem {
 
   authorId String
   author   User   @relation("PostAuthor", fields: [authorId], references: [id])
+
+  likes Likes[]
+  comments Comment[]
 }
 
 model Session{
@@ -75,10 +80,35 @@ model Session{
   @@index([userId])
 }
 
-model Comments{
+model Comment{
   id String @id @default(cuid())
+  content String
+
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  poemId String
+  poem   Poem @relation(fields: [poemId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([poemId])
 }
 
 model Likes{
   id String @id @default(cuid())
+
+  poemId String
+  poem Poem @relation(fields: [poemId], references: [id], onDelete: Cascade)
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([poemId,userId])
+  @@index([poemId])
 }
