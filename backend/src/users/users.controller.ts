@@ -8,42 +8,42 @@ import { UsersService } from './users.service';
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
-    @Post()
+    @Post('/create-user')
     create(@Body() dto: CreateUserDto){
         return this.usersService.create(dto);
     }
 
-    @Patch(':id')
+    @Patch('/:id')
     update(@Param('id') id: string, @Body() dto:UpdateUserDto){
         return this.usersService.update(id, dto);
     }
 
-    @Delete(':id')
+    @Delete('/:id')
     delete(@Param('id') id:string){
         return this.usersService.delete(id);
     }
 
-    @Get()
+    @Get('/find-all-users')
     findAll(){
         return this.usersService.findAll();
     }
 
-    @Get(':id')
+    @Get('/find-id/:id')
     findOne(@Param('id') id: string){
         return this.usersService.findById(id)
     }
 
-    @Get(':username')
+    @Get('/find-user/:username')
     findUsername(@Param('username') username: string){
         return this.usersService.findByUsername(username)
     }
 
-    @Get(':email')
+    @Get('/find-user-by-email/:email')
     findEmail(@Param('email') email: string){
-        return this.usersService.findByUsername(email)
+        return this.usersService.findByEmail(email)
     }
 
-    @Get(':email')
+    @Get('/findsomemethod/:email')
     findsomeServiceMethod(@Param('email') email: string){
         return this.usersService.someServiceMethod(email)
     }

@@ -5,14 +5,13 @@ import {
     UseGuards,
     HttpCode,
     HttpStatus,
-    Patch,
     Req
 } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from './guards/auth.guards';
-import { Request } from '@nestjs/common';
+import { Request } from 'express';
 
 export interface JwtPayload{
     sub: string;
@@ -46,8 +45,8 @@ export class AuthController {
     @UseGuards(AuthGuard)
     logout(@Req() req: RequestWithUser){
         return this.authService.logout(
-            req.user.sessionId,
-            req.user.sub
+            req.user.sub,
+            req.user.sessionId
         )
     }
     

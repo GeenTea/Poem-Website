@@ -1,7 +1,8 @@
 import { 
     Injectable, 
     BadRequestException,
-    UnauthorizedException
+    UnauthorizedException,
+    ConflictException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
@@ -22,7 +23,7 @@ export class AuthService {
         const existingUser = await this.usersService.findByEmail(dto.email)
 
         if(existingUser){
-            throw new BadRequestException('This email is not exist');
+            throw new ConflictException('This email is exist');
         }
 
         const user = await this.usersService.create(dto)
@@ -88,14 +89,14 @@ export class AuthService {
         }
     }
 
-    private createAccessToken(userId: string, email:  string, sessionId: string){
-        return{
-            accessToken: this.jwtService.sign({
+    private createAccessToken(userId: string, email:  string, sessionId: string): string{
+
+        return this.jwtService.sign({
                 sub: userId,
                 email,
                 sessionId,
             })
-        }
+        
     }
 
     private async createSession(userId: string){
