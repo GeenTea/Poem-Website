@@ -74,3 +74,11 @@ model Session{
 
   @@index([userId])
 }
+
+model Comments{
+  id String @id @default(cuid())
+}
+
+model Likes{
+  id String @id @default(cuid())
+}

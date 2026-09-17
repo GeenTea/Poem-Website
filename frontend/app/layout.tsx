@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Header from "@/components/layout/Header";
 
 import "./globals.css";
 
@@ -13,7 +14,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        <Header></Header>
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,31 +1,88 @@
 @import "tailwindcss";
 
-/* ---------------------------------------------------------------------------
-   Дизайн-токены.
-
-   Здесь установлен Tailwind v4: конфигурация живёт в CSS (@theme), отдельный
-   tailwind.config.ts не нужен. Всё, что объявлено в @theme, становится
-   утилитой: --color-glass-border даёт border-glass-border и т.д.
-
-   TODO: заполнить палитру, шрифты и переменные glassmorphism.
---------------------------------------------------------------------------- */
-@theme {
-  /* --font-sans: ...; */
-  /* --color-ink-500: ...; */
-  /* --radius-glass: 1.25rem; */
-  /* --blur-glass: 16px; */
-}
-
 :root {
-  /* TODO: переменные светлой темы (фон, текст, стекло) */
+  /* Палитра */
+  --cream: #fff7eb;
+  --sand: #f9f0e0;
+  --leaf: #a2ab73;
+  --berry: #cc3a63;
+
+  /* Производные оттенки */
+  --leaf-deep: #7a8450;   /* оливковый для иконок: на кремовом хватает контраста */
+  --ink: #2f3122;
+  --ink-muted: #5f6349;
+
+  /* Стекло */
+  --glass: rgba(255, 255, 255, 0.45);
+  --glass-strong: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(47, 49, 34, 0.1);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  --shadow-glass: 0 10px 34px rgba(90, 72, 40, 0.13);
+
+  /* Роли */
+  --accent: var(--berry);
+  --accent-ink: #ffffff;
+  --avatar-bg: var(--leaf);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* TODO: переменные тёмной темы */
+body {
+  background:
+    radial-gradient(110% 80% at 85% 0%, var(--sand) 0%, transparent 65%),
+    var(--cream);
+  color: var(--ink);
+  min-height: 100dvh;
+}
+
+/* Панель шапки */
+@utility glass-bar {
+  background:
+    linear-gradient(
+      100deg,
+      rgba(162, 171, 115, 0.14) 0%,
+      rgba(249, 240, 224, 0.5) 45%,
+      rgba(255, 255, 255, 0.4) 100%
+    ),
+    var(--glass);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass), var(--glass-highlight);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+
+/* Круглая кнопка поиска и пилюля Write */
+@utility glass-pill {
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(47, 49, 34, 0.18);
   }
 }
 
-@layer components {
-  /* TODO: .glass — фон, рамка, backdrop-filter, тень */
+/* Кружок с пером */
+@utility logo-mark {
+  background: rgba(162, 171, 115, 0.22);
+  border: 1px solid rgba(122, 132, 80, 0.3);
+  box-shadow: var(--glass-highlight);
+}
+
+/* Видимый фокус с клавиатуры */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--berry);
+    outline-offset: 2px;
+  }
+}
+
+/* backdrop-filter не поддерживается — делаем фон плотнее */
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --glass: rgba(255, 252, 245, 0.94);
+    --glass-strong: rgba(255, 255, 255, 0.9);
+  }
 }
