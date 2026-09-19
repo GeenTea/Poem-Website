@@ -95,7 +95,7 @@ export function Header({ user }: HeaderProps) {
             </>
           ) : (
             <Link
-              href="/signup"
+              href="/login"
               className="focus-ring flex h-10 items-center rounded-full bg-[var(--accent)] px-5 text-sm font-medium text-[var(--accent-ink)] transition-opacity hover:opacity-90"
             >
               Sign up

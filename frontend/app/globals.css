@@ -79,6 +79,13 @@ body {
   }
 }
 
+@utility auth-card {
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass), var(--glass-highlight);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+
 /* backdrop-filter не поддерживается — делаем фон плотнее */
 @supports not (backdrop-filter: blur(1px)) {
   :root {
