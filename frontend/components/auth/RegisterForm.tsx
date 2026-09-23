@@ -11,12 +11,16 @@ export function RegisterForm() {
   const [username,setUserName] = useState<string>("")
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
-  const [repetPassword, setRepetPAssword] =useState<string>("")
+  const [repeatPassword, setRepeatPassword] =useState<string>("")
+  const [displayName, setDisplayName] = useState("")
   const [error,setError] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [showPassword, setShowPassword] =useState<boolean>(false)
   const router = useRouter()
+  const passwordsMatch = password === repeatPassword
 
+
+  
 
 
   async function handleLogin(event:React.SubmitEvent<HTMLFormElement>){
@@ -26,6 +30,11 @@ export function RegisterForm() {
     setError([])
 
     try{
+      if(!passwordsMatch){
+        setError(['Your password does not match the confirmation.'])
+        return
+      }
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method:"POST",
         headers: {
@@ -35,7 +44,7 @@ export function RegisterForm() {
           username,
           email,
           password,
-          repetPassword,
+          displayName:displayName || undefined,
         }),
       })
 
@@ -80,11 +89,22 @@ export function RegisterForm() {
         <div className="flex flex-col px-14 py-25 gap-3">
           <h2 className="text-[45px] font-semibold mb-10 text-center">Sign up</h2>
 
+          <label htmlFor="displayName" className="text-[17px]">Display name</label>
+          <input 
+            type="text" 
+            name="displayName" 
+            id="displayName" 
+            placeholder="Enter display name"
+            value={displayName}
+            onChange={(event) => setDisplayName(event.target.value)}
+            className="border border-[#2F31221A] rounded-lg py-1.5 px-6 w-full"
+          />
+
           <label htmlFor="username" className="text-[17px]">Username</label>
           <input 
             type="text" 
             name="username" 
-            id="email" 
+            id="username" 
             placeholder="Enter username"
             value={username}
             onChange={(event) => setUserName(event.target.value)}
@@ -140,8 +160,8 @@ export function RegisterForm() {
               name="password" 
               id="password"
               placeholder="Enter your password"
-              value={repetPassword}
-              onChange={(event)=>setRepetPAssword(event.target.value)}
+              value={repeatPassword}
+              onChange={(event)=>setRepeatPassword(event.target.value)}
               className="border border-[#2F31221A] rounded-lg py-1.5 px-6 pr-11  w-full"
             />
             <button 
