@@ -1,7 +1,8 @@
 import { 
     Injectable,
     UnauthorizedException,
-    ConflictException
+    ConflictException,
+    NotFoundException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
@@ -31,7 +32,6 @@ export class AuthService {
 
         const accessToken = this.createAccessToken(
             user.id,
-            user.email,
             session.id,
         )
 
@@ -61,7 +61,6 @@ export class AuthService {
 
         const accessToken = this.createAccessToken(
                 user.id,
-                user.email,
                 session.id,
             )
         
@@ -88,11 +87,41 @@ export class AuthService {
         }
     }
 
-    private createAccessToken(userId: string, email:  string, sessionId: string): string{
+    async me(userId:string){
+        const user = await this.prisma.user.findUnique({
+            where:{
+                id:userId
+            },
+            select:{
+                id: true,
+                displayName: true,
+                avatarUrl:true,
+                username:true,
+                email:true,
+            }
+        })
+
+
+        if(!user){
+            throw new NotFoundException('User not found');
+        }
+
+
+        return user
+    }
+
+
+
+
+
+
+
+
+
+    private createAccessToken(userId: string, sessionId: string): string{
 
         return this.jwtService.sign({
                 sub: userId,
-                email,
                 sessionId,
             })
         

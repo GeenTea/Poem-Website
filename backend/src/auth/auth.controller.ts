@@ -5,7 +5,8 @@ import {
     UseGuards,
     HttpCode,
     HttpStatus,
-    Req
+    Req,
+    Get
 } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
@@ -48,6 +49,12 @@ export class AuthController {
             req.user.sub,
             req.user.sessionId
         )
+    }
+
+    @Get('/me')
+    @UseGuards(AuthGuard)
+    me(@Req() req:RequestWithUser){
+        return this.authService.me(req.user.sub)
     }
     
 }

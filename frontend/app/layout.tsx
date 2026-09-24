@@ -3,9 +3,6 @@ import Header from "@/components/layout/Header";
 
 import "./globals.css";
 
-// TODO: подключить шрифты (next/font), провайдеры и общий каркас
-// Header / Sidebar / Footer.
-
 export const metadata: Metadata = {
   title: "Сайт стихов",
   description: "Публикация и чтение стихов",
