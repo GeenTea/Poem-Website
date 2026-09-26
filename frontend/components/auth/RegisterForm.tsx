@@ -58,17 +58,6 @@ export function RegisterForm() {
 
       console.log('Authorize successfull')
 
-
-      localStorage.setItem(
-        'accessToken',
-        data.accessToken,
-      )
-
-      localStorage.setItem(
-        'refreshToken',
-        data.refreshToken
-      )
-
       router.replace('/')
     }catch(error){
       if(error instanceof Error){
