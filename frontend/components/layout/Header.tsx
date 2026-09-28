@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoutButton } from "../ui/Logoutbutton";
 
 type User = {
   id: string

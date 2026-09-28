@@ -7,11 +7,19 @@ export async function POST(request: Request){
 
     if(!token) return null
 
-    const body = await request.json()
-    const response = await fetch(`${process.env.API_URL}/auth/logout`, {
-        method: 'POST',
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
+    try {
+        await fetch(`${process.env.API_URL}/auth/logout`, {
+            method: 'POST',
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        })
+    }catch(error){
+        console.error(error)
+    }
+
+    cookieStore.delete("accessToken")
+    cookieStore.delete("refreshToken")
+
+    return NextResponse.json({ok:true}) 
 }
