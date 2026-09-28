@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
+import { getCurrentUser } from "@/lib/auth";
 
 import "./globals.css";
 
@@ -8,11 +9,13 @@ export const metadata: Metadata = {
   description: "Публикация и чтение стихов",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const user = await getCurrentUser()
+
   return (
     <html lang="ru">
       <body>
-        <Header></Header>
+        <Header user={user}></Header>
         {children}
       </body>
     </html>

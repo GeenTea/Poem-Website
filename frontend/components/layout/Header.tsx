@@ -1,8 +1,11 @@
 import Link from "next/link";
 
 type User = {
-  name: string;
-  avatarUrl?: string;
+  id: string
+  username: string
+  displayName: string | null
+  avatarUrl: string | null
+  email: string
 };
 
 type HeaderProps = {
@@ -10,7 +13,7 @@ type HeaderProps = {
 };
 
 const navLinks = [
-  { href: "/feed", label: "Feed" },
+  { href: "/", label: "Feed" },
   { href: "/poets", label: "Poets" },
   { href: "/featured", label: "Featured" },
 ];
@@ -77,7 +80,7 @@ export function Header({ user }: HeaderProps) {
 
               <Link
                 href="/profile"
-                aria-label={user.name}
+                aria-label={user.displayName ?? user.username}
                 className="focus-ring rounded-full"
               >
                 {user.avatarUrl ? (
@@ -88,7 +91,7 @@ export function Header({ user }: HeaderProps) {
                   />
                 ) : (
                   <span className="grid size-9 place-items-center rounded-full bg-[var(--avatar-bg)] text-xs font-medium text-[var(--ink)] ring-1 ring-[var(--glass-border)]">
-                    {getInitials(user.name)}
+                    {getInitials(user.displayName ?? user.username)}
                   </span>
                 )}
               </Link>
