@@ -1,13 +1,6 @@
 import Link from "next/link";
-import { LogoutButton } from "../ui/Logoutbutton";
-
-type User = {
-  id: string
-  username: string
-  displayName: string | null
-  avatarUrl: string | null
-  email: string
-};
+import { UserMenu } from "../ui/usermenu";
+import { User } from "@/types/user";
 
 type HeaderProps = {
   user?: User | null;
@@ -19,14 +12,6 @@ const navLinks = [
   { href: "/featured", label: "Featured" },
 ];
 
-function getInitials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-}
 
 export function Header({ user }: HeaderProps) {
   return (
@@ -79,30 +64,14 @@ export function Header({ user }: HeaderProps) {
                 <span className="hidden sm:inline">Write</span>
               </Link>
 
-              <Link
-                href="/profile"
-                aria-label={user.displayName ?? user.username}
-                className="focus-ring rounded-full"
-              >
-                {user.avatarUrl ? (
-                  <img
-                    src={user.avatarUrl}
-                    alt=""
-                    className="size-9 rounded-full object-cover ring-1 ring-[var(--glass-border)]"
-                  />
-                ) : (
-                  <span className="grid size-9 place-items-center rounded-full bg-[var(--avatar-bg)] text-xs font-medium text-[var(--ink)] ring-1 ring-[var(--glass-border)]">
-                    {getInitials(user.displayName ?? user.username)}
-                  </span>
-                )}
-              </Link>
+              <UserMenu user={user} />
             </>
           ) : (
             <Link
               href="/login"
               className="focus-ring flex h-10 items-center rounded-full bg-[var(--accent)] px-5 text-sm font-medium text-[var(--accent-ink)] transition-opacity hover:opacity-90"
             >
-              Sign up
+              Sign in
             </Link>
           )}
         </div>
@@ -171,3 +140,4 @@ function PencilIcon({ className }: IconProps) {
     </svg>
   );
 }
+

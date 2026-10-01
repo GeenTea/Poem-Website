@@ -18,6 +18,7 @@
   --glass-border: rgba(47, 49, 34, 0.1);
   --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.75);
   --shadow-glass: 0 10px 34px rgba(90, 72, 40, 0.13);
+  --glass-hover: rgba(162, 171, 115, 0.15);
 
   /* Роли */
   --accent: var(--berry);
@@ -93,3 +94,12 @@ body {
     --glass-strong: rgba(255, 255, 255, 0.9);
   }
 }
+
+@utility glass-panel {
+  background: rgba(255, 252, 245, 0.92);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 12px 32px rgba(90, 72, 40, 0.16), var(--glass-highlight);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(16px) saturate(150%);
+}
+
