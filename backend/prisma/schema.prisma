@@ -43,7 +43,8 @@ model User {
   poems Poem[] @relation("PostAuthor")
   sessions Session[]
   comments Comment[]
-  likes Likes[]
+  likes Like[]
+  commentLikes CommentLike[]
 }
 
 model Poem {
@@ -59,9 +60,9 @@ model Poem {
   updatedAt   DateTime  @updatedAt
 
   authorId String
-  author   User   @relation("PostAuthor", fields: [authorId], references: [id])
+  author   User   @relation("PostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
 
-  likes Likes[]
+  likes Like[]
   comments Comment[]
 }
 
@@ -85,22 +86,28 @@ model Comment{
   content String
 
 
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  authorId String
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   poemId String
   poem   Poem @relation(fields: [poemId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isEdited Boolean @default(false)
 
-  @@index([userId])
-  @@index([poemId])
+  parentId String?
+  parent Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("CommentReplies")
+
+  commentLikes CommentLike[]
+
+  @@index([authorId])
+  @@index([poemId, createdAt])
+  @@index([parentId])
 }
 
-model Likes{
-  id String @id @default(cuid())
-
+model Like{
   poemId String
   poem Poem @relation(fields: [poemId], references: [id], onDelete: Cascade)
 
@@ -109,6 +116,18 @@ model Likes{
 
   createdAt DateTime @default(now())
 
-  @@unique([poemId,userId])
-  @@index([poemId])
+  @@id([poemId,userId])
+}
+
+model CommentLike{
+  userId String
+  commentId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([userId, commentId])
+  @@index([commentId])
 }
