@@ -19,14 +19,6 @@ export  class PoemsService {
             throw new NotFoundException(`Author with id ${dto.authorId} not found`);
         }
 
-        // const poem = await this.prisma.poem.create({
-        //     data: {
-        //         title: dto.title,
-        //         content: dto.content,
-        //         authorId: dto.authorId
-        //     }
-        // })
-
         return this.prisma.poem.create({
             data: dto
         });
