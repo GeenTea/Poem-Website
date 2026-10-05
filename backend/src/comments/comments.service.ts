@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comments.dto';
 import { UpdateCommentDto } from './dto/update-comments.dto';
@@ -47,6 +47,80 @@ export class CommentsService {
                 parentId: dto.parentId,
                 poemId: poem.id,
                 authorId:sub
+            }
+        })
+    }
+
+    async delete(commentId: string, sub: string, poemId: string){
+        const poem = await this.prisma.poem.findUnique({
+            where: { 
+                id: poemId,
+                status: 'PUBLISHED'
+            }
+        })
+
+        if(!poem){
+            throw new NotFoundException(`Poem with id ${poemId} not found`);
+        }
+
+        const comment = await this.prisma.comment.findUnique({
+            where: { 
+                id: commentId,
+                poemId: poemId
+            }
+        })
+
+        if(!comment){
+            throw new NotFoundException(`Comment with id ${commentId} not found`);
+        }
+
+        if(comment.authorId !== sub){
+            throw new ForbiddenException(`You are not authorized to delete this comment`);
+        }
+
+        return this.prisma.comment.delete({
+            where: { 
+                id: commentId,
+                poemId: poemId
+            }
+        })
+    }
+
+    async update(commentId: string, sub: string, poemId: string, dto: UpdateCommentDto){
+        const poem = await this.prisma.poem.findUnique({
+            where: { 
+                id: poemId,
+                status: 'PUBLISHED'
+            }
+        })
+
+        if(!poem){
+            throw new NotFoundException(`Poem with id ${poemId} not found`);
+        }
+
+        const comment = await this.prisma.comment.findUnique({
+            where: {
+                id: commentId,
+                poemId: poemId
+            }
+        })
+
+        if(!comment){
+            throw new NotFoundException(`Comment with id ${commentId} not found`);
+        }
+
+        if(comment.authorId !== sub){
+            throw new ForbiddenException(`You are not authorized to update this comment`);
+        }
+
+        return this.prisma.comment.update({
+            where: {
+                id: commentId,
+                poemId: poemId
+            },
+            data: {
+                content: dto.content,
+                isEdited: true
             }
         })
     }
