@@ -140,7 +140,11 @@ export class CommentsService {
         })
     }
 
-    async findAll(poemId: string){
+    async findAll(poemId: string, page = 1, limit = 10){
+        const safePage = Math.max(page, 1);
+        const safeLimit = Math.min(Math.max(limit, 1), 50)
+
+
         const poem = await this.prisma.poem.findUnique({
             where: {
                 id: poemId,
@@ -155,6 +159,57 @@ export class CommentsService {
         return this.prisma.comment.findMany({
             where:{
                 poemId: poemId,
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            skip: (safePage - 1) * safeLimit,
+            take: safeLimit
+        })
+    }
+
+    async findById(commentId: string, poemId: string){
+        const poem = await this.prisma.poem.findUnique({
+            where: {
+                id: poemId,
+                status: 'PUBLISHED'
+            }
+        })
+
+        if(!poem){
+            throw new NotFoundException(`Poem with id ${poemId} not found`);
+        }
+
+        const comment = await this.prisma.comment.findUnique({
+            where: {
+                id: commentId,
+                poemId: poemId
+            }
+        })
+
+        if(!comment){
+            throw new NotFoundException(`Comment with id ${commentId} not found`);
+        }
+
+        return comment;
+    }
+
+    async findReplies(commentId: string, poemId: string){
+        const poem = await this.prisma.poem.findUnique({
+            where: {
+                id: poemId,
+                status: 'PUBLISHED'
+            }
+        })
+
+        if(!poem){
+            throw new NotFoundException(`Poem with id ${poemId} not found`);
+        }
+
+        return this.prisma.comment.findMany({
+            where: {
+                parentId: commentId,
+                poemId: poemId
             },
             orderBy: {
                 createdAt: 'desc'

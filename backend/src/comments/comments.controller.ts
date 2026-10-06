@@ -1,4 +1,5 @@
 import { Controller, Req } from '@nestjs/common';
+import { Query, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
 import { AuthGuard } from 'src/auth/guards/auth.guards';
@@ -43,7 +44,27 @@ export class CommentsController {
     }
 
     @Get()
-    findAll(@Param('poemId') poemId: string){
-        return this.commentsService.findAll(poemId);
+    findAll(
+        @Param('poemId') poemId: string,
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number
+    ){
+        return this.commentsService.findAll(poemId, page, limit);
+    }
+
+    @Get(':commentId')
+    findById(
+        @Param('poemId') poemId: string,
+        @Param('commentId') commentId: string
+    ){
+        return this.commentsService.findById(commentId, poemId);
+    }
+
+    @Get(':commentId/replies')
+    findReplies(
+        @Param('poemId') poemId: string,
+        @Param('commentId') commentId: string
+    ){
+        return this.commentsService.findReplies(commentId, poemId);
     }
 }
