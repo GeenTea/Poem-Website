@@ -41,4 +41,9 @@ export class CommentsController {
     ){
         return this.commentsService.delete(commentId, req.user.sub, poemId);
     }
+
+    @Get()
+    findAll(@Param('poemId') poemId: string){
+        return this.commentsService.findAll(poemId);
+    }
 }

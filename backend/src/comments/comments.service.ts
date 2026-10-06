@@ -63,6 +63,19 @@ export class CommentsService {
             throw new NotFoundException(`Poem with id ${poemId} not found`);
         }
 
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: sub
+            },
+            select: {
+                role: true
+            }
+        })
+
+        if(!user){
+            throw new NotFoundException(`User with id ${sub} not found`);
+        }
+
         const comment = await this.prisma.comment.findUnique({
             where: { 
                 id: commentId,
@@ -74,7 +87,9 @@ export class CommentsService {
             throw new NotFoundException(`Comment with id ${commentId} not found`);
         }
 
-        if(comment.authorId !== sub){
+        const canModerate = user.role === 'ADMIN' || user.role === 'MODERATOR';
+
+        if(!canModerate && comment.authorId !== sub){
             throw new ForbiddenException(`You are not authorized to delete this comment`);
         }
 
@@ -121,6 +136,28 @@ export class CommentsService {
             data: {
                 content: dto.content,
                 isEdited: true
+            }
+        })
+    }
+
+    async findAll(poemId: string){
+        const poem = await this.prisma.poem.findUnique({
+            where: {
+                id: poemId,
+                status: 'PUBLISHED'
+            }
+        })
+
+        if(!poem){
+            throw new NotFoundException(`Poem with id ${poemId} not found`);
+        }
+
+        return this.prisma.comment.findMany({
+            where:{
+                poemId: poemId,
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         })
     }
