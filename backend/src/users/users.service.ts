@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import  * as argon2  from 'argon2';
+import { PoemStatus } from 'generated/prisma/enums';
 
 @Injectable()
 export class UsersService {
@@ -101,5 +102,28 @@ export class UsersService {
 
     async findAll() {
         return this.prisma.user.findMany();
+    }
+
+    async getProfile(username:string){
+        const user = await this.prisma.user.findUnique({
+            where: { username },
+            select: {
+                id: true,
+                username: true,
+                displayName: true,
+                bio: true,
+                avatarUrl: true,
+                createdAt:true,
+                _count: {
+                select: { followers: true, following: true, poems: {where: {status: PoemStatus.PUBLISHED}} },
+                },
+            },
+        });
+
+        if(!user){
+            throw new NotFoundException('User dont exist')
+        }
+
+        return user
     }
 }

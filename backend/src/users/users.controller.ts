@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -46,5 +46,10 @@ export class UsersController {
     @Get('/findsomemethod/:email')
     findsomeServiceMethod(@Param('email') email: string){
         return this.usersService.someServiceMethod(email)
+    }
+
+    @Get('/profile:username')
+    getProfile(@Param('username') username: string){
+        return this.usersService.getProfile(username)
     }
 }

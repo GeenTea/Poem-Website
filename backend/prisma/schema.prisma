@@ -66,6 +66,7 @@ model Poem {
 
   likes    Like[]
   comments Comment[]
+  tags PoemTag[]
 }
 
 model Session {
@@ -144,4 +145,25 @@ model Follow {
 
   @@id([followerId, followingId])
   @@index([followingId])
+}
+
+model Tag {
+    id String @id @default(cuid())
+    slug String @unique
+    name String @unique
+
+    createdAt DateTime @default(now())
+
+    poems PoemTag[]
+}
+
+model PoemTag{
+  poemId String
+  tagId String
+
+  poem Poem @relation(fields: [poemId], references: [id], onDelete: Cascade)
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([poemId, tagId])
+  @@index([tagId])
 }
