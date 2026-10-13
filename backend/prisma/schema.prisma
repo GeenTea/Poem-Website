@@ -4,9 +4,9 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-  moduleFormat= "cjs"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -40,11 +40,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  poems Poem[] @relation("PostAuthor")
-  sessions Session[]
-  comments Comment[]
-  likes Like[]
+  poems        Poem[]        @relation("PostAuthor")
+  sessions     Session[]
+  comments     Comment[]
+  likes        Like[]
   commentLikes CommentLike[]
+  follower     Follow[]      @relation("UserFollowing")
+  following    Follow[]      @relation("UserFollower")
 }
 
 model Poem {
@@ -62,43 +64,42 @@ model Poem {
   authorId String
   author   User   @relation("PostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
 
-  likes Like[]
+  likes    Like[]
   comments Comment[]
 }
 
-model Session{
+model Session {
   id String @id @default(cuid())
 
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   refreshTokenHash String
 
   expiresAt DateTime
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   revokedAt DateTime?
 
   @@index([userId])
 }
 
-model Comment{
-  id String @id @default(cuid())
+model Comment {
+  id      String @id @default(cuid())
   content String
 
-
   authorId String
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   poemId String
-  poem   Poem @relation(fields: [poemId], references: [id], onDelete: Cascade)
+  poem   Poem   @relation(fields: [poemId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  isEdited Boolean @default(false)
+  isEdited  Boolean  @default(false)
 
   parentId String?
-  parent Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies Comment[] @relation("CommentReplies")
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
 
   commentLikes CommentLike[]
 
@@ -107,27 +108,40 @@ model Comment{
   @@index([parentId])
 }
 
-model Like{
+model Like {
   poemId String
-  poem Poem @relation(fields: [poemId], references: [id], onDelete: Cascade)
+  poem   Poem   @relation(fields: [poemId], references: [id], onDelete: Cascade)
 
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
-  @@id([poemId,userId])
+  @@id([poemId, userId])
 }
 
-model CommentLike{
-  userId String
+model CommentLike {
+  userId    String
   commentId String
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
   @@id([userId, commentId])
   @@index([commentId])
+}
+
+model Follow {
+  followerId  String
+  followingId String
+
+  follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollower", fields: [followingId], references: [id], onDelete: Cascade)
+
+  createAt DateTime @default(now())
+
+  @@id([followerId, followingId])
+  @@index([followingId])
 }
