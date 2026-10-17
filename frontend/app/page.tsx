@@ -1,7 +1,9 @@
+import { PoemFeed } from "@/components/poems/PoemsFeeds";
+
 export default function HomePage() {
   return (
     <main>
-      {/* TODO: реализовать */}
+        <PoemFeed />
     </main>
   );
 }

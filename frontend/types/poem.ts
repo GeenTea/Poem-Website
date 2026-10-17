@@ -1,16 +1,24 @@
-import type { User } from "./user";
-
-/** TODO: описать под контракт NestJS. */
 export interface Tag {
-  id: string;
-  slug: string;
   name: string;
+  slug: string;
+}
+
+export interface Author {
+  username: string;
+  displayName: string;
+  avatarUrl: string | null;
 }
 
 export interface Poem {
   id: string;
   title: string;
-  content: string;
-  author: User;
+  text: string;
+  publishedAt: string;
+  readingMinutes: number;
   tags: Tag[];
+  author: Author;
+  stats: {
+    likes: number;
+    comments: number;
+  };
 }

@@ -115,7 +115,7 @@ export class UsersService {
                 avatarUrl: true,
                 createdAt:true,
                 _count: {
-                select: { followers: true, following: true, poems: {where: {status: PoemStatus.PUBLISHED}} },
+                select: { follower: true, following: true, poems: {where: {status: PoemStatus.PUBLISHED}} },
                 },
             },
         });

@@ -2,7 +2,39 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePoemDto } from './dto/create-poem.dto';
 import { UpdatePoemDto } from './dto/update-poem.dto';
+import { Prisma } from '../../generated/prisma/client'
 import type { Poem } from '../../generated/prisma/client'
+
+
+const poemPublicSelect = {
+  id: true,
+  title: true,
+  content: true,
+  status: true,
+  viewCount: true,
+  publishedAt: true,
+  createdAt: true,
+  updatedAt: true,
+
+  author: {
+    select: {
+      id: true,
+      username: true,
+      displayName: true,
+      avatarUrl: true,
+    },
+  },
+
+  tags: {
+    select: {
+      tag: { select: { name: true, slug: true } },
+    },
+  },
+
+  _count: {
+    select: { likes: true, comments: true },
+  },
+} satisfies Prisma.PoemSelect;
 
 @Injectable()
 export  class PoemsService {
@@ -49,25 +81,7 @@ export  class PoemsService {
                 publishedAt: 'desc'
             },
 
-            select: {
-                id: true,
-                title: true,
-                content: true,
-                status: true,
-                viewCount: true,
-                publishedAt: true,
-                createdAt: true,
-                updatedAt: true,
-
-                author: {
-                    select: {
-                        id: true,
-                        username: true,
-                        displayName: true,
-                        avatarUrl: true,
-                    },
-                },
-            },
+            select: poemPublicSelect,
         });
 
     }
@@ -78,25 +92,7 @@ export  class PoemsService {
                 id,
             },
 
-            select: {
-                id: true,
-                title: true,
-                content: true,
-                status: true,
-                viewCount: true,
-                publishedAt: true,
-                createdAt: true,
-                updatedAt: true,
-
-                author: {
-                    select: {
-                        id: true,
-                        username: true,
-                        displayName: true,
-                        avatarUrl: true,
-                    },
-                },
-            },
+            select: poemPublicSelect
         })
         if(!poem){
             throw new NotFoundException(`Poem with id ${id} not found`);

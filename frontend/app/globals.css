@@ -103,3 +103,15 @@ body {
   backdrop-filter: blur(16px) saturate(150%);
 }
 
+@theme inline {
+  --color-cream: var(--cream);
+  --color-sand: var(--sand);
+  --color-leaf: var(--leaf);
+  --color-leaf-deep: var(--leaf-deep);
+  --color-berry: var(--berry);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+
+  --font-roboto: var(--font-roboto), sans-serif;
+  --font-inter: var(--font-inter), sans-serif;
+}
