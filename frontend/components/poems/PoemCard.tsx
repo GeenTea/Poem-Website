@@ -56,17 +56,17 @@ export function PoemCard({ poem }: PoemCardProps) {
             <span className="block text-xs text-ink-muted">
               <time dateTime={publishedAt}>{formatRelativeDate(publishedAt)}</time>
               {" · "}
-              {readingMinutes} мин
+              {readingMinutes} min
             </span>
           </span>
         </Link>
 
         <div className="flex shrink-0 items-center gap-3 text-sm text-ink-muted">
-          <span className="flex items-center gap-1" aria-label={`Лайков: ${stats.likes}`}>
+          <span className="flex items-center gap-1" aria-label={`Likes: ${stats.likes}`}>
             <Heart className="size-4" aria-hidden />
             {formatCount(stats.likes)}
           </span>
-          <span className="flex items-center gap-1" aria-label={`Комментариев: ${stats.comments}`}>
+          <span className="flex items-center gap-1" aria-label={`Comments: ${stats.comments}`}>
             <MessageCircle className="size-4" aria-hidden />
             {formatCount(stats.comments)}
           </span>

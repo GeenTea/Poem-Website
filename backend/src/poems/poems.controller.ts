@@ -1,4 +1,4 @@
-import { Post, Delete, Get, Body, Param, Patch } from '@nestjs/common';
+import { Post, Delete, Get, Body, Param, Patch, Query } from '@nestjs/common';
 import { CreatePoemDto } from './dto/create-poem.dto';
 import { UpdatePoemDto } from './dto/update-poem.dto';
 import { Controller } from '@nestjs/common';
@@ -14,8 +14,8 @@ export class PoemsController {
     }
 
     @Get('/findall')
-    findAll() {
-        return this.poemsService.findAll()
+    findAll(@Query('tag') tag?: string) {
+        return this.poemsService.findAll(tag)
     }
 
     @Get("/findPoem/:id")

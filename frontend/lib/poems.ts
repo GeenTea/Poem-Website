@@ -1,5 +1,5 @@
-import type { Poem } from "@/types/poem";
-import { fetchPoemById, fetchPoems, type PoemDto } from "@/lib/poem-api";
+import type { Poem, Tag } from "@/types/poem";
+import { fetchPoemById, fetchPoems, fetchTags ,type PoemDto } from "@/lib/poem-api";
 import { getReadingMinutes } from "@/lib/utils";
 
 function toPoem(dto: PoemDto): Poem {
@@ -7,7 +7,7 @@ function toPoem(dto: PoemDto): Poem {
 
   return {
     id: dto.id,
-    title: dto.title?.trim() || "Без названия",
+    title: dto.title?.trim() || "No name",
     text,
     publishedAt: dto.publishedAt ?? dto.createdAt,
     readingMinutes: getReadingMinutes(text),
@@ -24,11 +24,16 @@ function toPoem(dto: PoemDto): Poem {
   };
 }
 
-export async function getPoems(): Promise<Poem[]> {
-  const dtos = await fetchPoems();
+export async function getPoems(tag?:string): Promise<Poem[]> {
+  const dtos = await fetchPoems(tag);
   return dtos.map(toPoem);
 }
 
 export async function getPoem(id: string): Promise<Poem> {
   return toPoem(await fetchPoemById(id));
+}
+
+export async function getTags(): Promise<Tag[]>{
+  const dtos = await fetchTags()
+  return dtos.filter((t) => t._count.poems > 0).map(({name, slug})=> ({name,slug}));
 }

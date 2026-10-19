@@ -62,7 +62,7 @@ export  class PoemsService {
         })
 
         if (!poem) {
-            throw new Error(`Poem with id ${id} not found`);
+            throw new NotFoundException(`Poem with id ${id} not found`);
         }
 
         return this.prisma.poem.update({
@@ -71,10 +71,17 @@ export  class PoemsService {
         });
     };
 
-    async findAll(){
+    async findAll(tag?:string){
         return this.prisma.poem.findMany({
             where:{
-                status: 'PUBLISHED'
+                status: 'PUBLISHED',
+                ...(tag&& {
+                    tags:{
+                        some:{
+                            tag:{slug:tag}
+                        }
+                    }
+                })
             },
 
             orderBy: {
@@ -135,6 +142,9 @@ export  class PoemsService {
             },
             data: {
                 status,
+                ...(status === 'PUBLISHED' && !poem.publishedAt && {
+                publishedAt: new Date(),
+                }),
             }
         })
     }

@@ -12,13 +12,13 @@ const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 10
 // ---------- Данные ----------
 
 const tags = [
-  { slug: 'romance', name: 'Романтика' },
-  { slug: 'loneliness', name: 'Одиночество' },
-  { slug: 'nature', name: 'Природа' },
-  { slug: 'philosophy', name: 'Философия' },
-  { slug: 'nostalgia', name: 'Ностальгия' },
-  { slug: 'war', name: 'Война' },
-  { slug: 'city', name: 'Город' },
+  { slug: 'romance', name: 'Romance' },
+  { slug: 'loneliness', name: 'Loneliness' },
+  { slug: 'nature', name: 'Nature' },
+  { slug: 'philosophy', name: 'Philosophy' },
+  { slug: 'nostalgia', name: 'Nostalgia' },
+  { slug: 'war', name: 'War' },
+  { slug: 'city', name: 'City' },
 ];
 
 const users = [

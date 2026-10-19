@@ -13,7 +13,7 @@ export function getInitials(name: string) {
   );
 }
 
-const rtf = new Intl.RelativeTimeFormat("ru", { numeric: "auto" });
+const rtf = new Intl.RelativeTimeFormat("en-UK", { numeric: "auto" });
 const units: Array<[Intl.RelativeTimeFormatUnit, number]> = [
   ["year", 31_536_000],
   ["month", 2_592_000],
@@ -31,7 +31,7 @@ export function formatRelativeDate(iso: string) {
       return rtf.format(Math.round(diffSeconds / seconds), unit);
     }
   }
-  return "только что";
+  return "now";
 }
 
 // Стихи читают медленнее прозы, поэтому ~150 слов в минуту
@@ -40,7 +40,7 @@ export function getReadingMinutes(text: string) {
   return Math.max(1, Math.round(words / 150));
 }
 
-const numberFormat = new Intl.NumberFormat("ru");
+const numberFormat = new Intl.NumberFormat("en-UK");
 export function formatCount(value: number) {
   return numberFormat.format(value);
 }
