@@ -71,7 +71,9 @@ export  class PoemsService {
         });
     };
 
-    async findAll(tag?:string){
+    async findAll(tag?:string, q?: string){
+        const search = q?.trim()
+
         return this.prisma.poem.findMany({
             where:{
                 status: 'PUBLISHED',
@@ -81,7 +83,15 @@ export  class PoemsService {
                             tag:{slug:tag}
                         }
                     }
-                })
+                }),
+                ...(search && {
+                    OR: [
+                        { title: { contains: search, mode: 'insensitive' } },
+                        { content: { contains: search, mode: 'insensitive' } },
+                        { author: { username: { contains: search, mode: 'insensitive' } } },
+                        { author: { displayName: { contains: search, mode: 'insensitive' } } },
+                    ],
+                }),
             },
 
             orderBy: {

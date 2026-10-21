@@ -4,18 +4,20 @@ import { PoemCard } from "./PoemCard";
 
 interface PoemFeedProps {
   poems: Poem[];
+  title?: string;
   emptyMessage?: string;
 }
 
 export function PoemFeed({
   poems,
+  title = "Fresh",
   emptyMessage = "It's empty here for now. Post the first poem!",
 }: PoemFeedProps) {
   return (
     <section aria-labelledby="feed-heading">
       <h2 id="feed-heading" className="mb-6 flex items-center gap-2 text-sm text-ink-muted">
         <Sparkles className="size-4 text-leaf-deep" aria-hidden />
-        Fresh
+        {title}
       </h2>
 
       {poems.length === 0 ? (

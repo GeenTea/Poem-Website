@@ -24,6 +24,11 @@ export interface TagDto{
   _count: {poems: number}
 }
 
+export interface PoemFilters {
+  tag?: string;
+  q?: string;
+}
+
 const API_URL = process.env.API_URL ?? "http://localhost:3001";
 
 async function request<T>(path: string): Promise<T> {
@@ -34,9 +39,10 @@ async function request<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function fetchPoems(tag?: string) {
+export function fetchPoems({tag, q} : PoemFilters = {}) {
   const params = new URLSearchParams();
   if(tag) params.set("tag", tag);
+  if(q) params.set("q", q)
 
   const query = params.toString();
 

@@ -14,8 +14,8 @@ export class PoemsController {
     }
 
     @Get('/findall')
-    findAll(@Query('tag') tag?: string) {
-        return this.poemsService.findAll(tag)
+    findAll(@Query('tag') tag?: string, @Query('q') q?: string) {
+        return this.poemsService.findAll(tag, q)
     }
 
     @Get("/findPoem/:id")
