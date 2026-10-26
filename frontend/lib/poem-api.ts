@@ -29,12 +29,21 @@ export interface PoemFilters {
   q?: string;
 }
 
+export class ApiError extends Error{
+  constructor(
+    public status: number,
+    message: string,
+  ){
+    super(message)
+  }
+}
+
 const API_URL = process.env.API_URL ?? "http://localhost:3001";
 
 async function request<T>(path: string): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, { next: { revalidate: 60 } });
   if (!res.ok) {
-    throw new Error(`API ${path} response ${res.status}`);
+    throw new ApiError(res.status, `API ${path} response ${res.status}`);
   }
   return res.json() as Promise<T>;
 }
