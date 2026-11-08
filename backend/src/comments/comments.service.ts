@@ -159,6 +159,11 @@ export class CommentsService {
         return this.prisma.comment.findMany({
             where:{
                 poemId: poemId,
+                parentId: null,
+            },
+            include: {
+                author: { select: { id: true, username: true, displayName: true, avatarUrl: true } },
+                _count: { select: { replies: true } },
             },
             orderBy: {
                 createdAt: 'desc'
@@ -210,6 +215,10 @@ export class CommentsService {
             where: {
                 parentId: commentId,
                 poemId: poemId
+            },
+            include: {
+                author: { select: { id: true, username: true, displayName: true, avatarUrl: true } },
+                _count: { select: { replies: true } },
             },
             orderBy: {
                 createdAt: 'desc'

@@ -5,7 +5,7 @@ export async function POST(request: Request){
     const cookieStore = await cookies()
     const token = cookieStore.get("accessToken")?.value
 
-    if(!token) return null
+    if(!token) return NextResponse.json({ok:true})
 
     try {
         await fetch(`${process.env.API_URL}/auth/logout`, {

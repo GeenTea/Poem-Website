@@ -13,7 +13,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   let data;
   try {
     data = await Promise.all([
-      getPoems(tag), 
+      getPoems({tag}), 
       getTags().catch((error) => {
         console.error(error); 
         return[];

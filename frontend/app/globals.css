@@ -17,7 +17,7 @@
   --glass-strong: rgba(255, 255, 255, 0.55);
   --glass-border: rgba(47, 49, 34, 0.1);
   --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.75);
-  --shadow-glass: 0 10px 34px rgba(90, 72, 40, 0.13);
+  --shadow-glass: 0 10px 34px #5a482821;
   --glass-hover: rgba(162, 171, 115, 0.15);
 
   /* Роли */

@@ -98,6 +98,7 @@ export class AuthService {
                 avatarUrl:true,
                 username:true,
                 email:true,
+                role:true,
             }
         })
 
