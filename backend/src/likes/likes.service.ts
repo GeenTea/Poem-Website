@@ -1,20 +1,31 @@
 import { Injectable, ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Prisma } from 'generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 const MAX_LIMIT = 50;
 
 @Injectable()
 export class LikesService {
-    constructor(private readonly prisma: PrismaService){}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly notifications: NotificationsService,
+    ){}
 
     async addLike(poemId: string, userId: string) {
-        await this.getPublishedPoem(poemId);
+        const poem = await this.getPublishedPoem(poemId);
 
         try {
-            return await this.prisma.like.create({
+            const like = await this.prisma.like.create({
                 data: { poemId, userId },
             });
+            await this.notifications.notify({
+                type: 'POEM_LIKE',
+                recipientId: poem.authorId,
+                actorId: userId,
+                poemId,
+            });
+            return like;
         } catch (error) {
             if (this.isPrismaError(error, 'P2002')) {
                 throw new ConflictException('You have already liked this poem');
@@ -24,12 +35,19 @@ export class LikesService {
     }
 
     async removeLike(poemId: string, userId: string) {
-        await this.getPublishedPoem(poemId);
- 
+        const poem = await this.getPublishedPoem(poemId);
+
         try {
-            return await this.prisma.like.delete({
+            const like = await this.prisma.like.delete({
                 where: { poemId_userId: { poemId, userId } },
             });
+            await this.notifications.retract({
+                type: 'POEM_LIKE',
+                recipientId: poem.authorId,
+                actorId: userId,
+                poemId,
+            });
+            return like;
         } catch (error) {
             if (this.isPrismaError(error, 'P2025')) {
                 throw new NotFoundException('Like not found');
@@ -132,12 +150,20 @@ export class LikesService {
     // ==================== Лайки комментариев ====================
  
     async addLikeComment(poemId: string, commentId: string, userId: string) {
-        await this.getCommentOnPublishedPoem(poemId, commentId);
- 
+        const comment = await this.getCommentOnPublishedPoem(poemId, commentId);
+
         try {
-            return await this.prisma.commentLike.create({
+            const like = await this.prisma.commentLike.create({
                 data: { commentId, userId },
             });
+            await this.notifications.notify({
+                type: 'COMMENT_LIKE',
+                recipientId: comment.authorId,
+                actorId: userId,
+                poemId,
+                commentId,
+            });
+            return like;
         } catch (error) {
             if (this.isPrismaError(error, 'P2002')) {
                 throw new ConflictException('You have already liked this comment');
@@ -147,12 +173,20 @@ export class LikesService {
     }
  
     async removeLikeComment(poemId: string, commentId: string, userId: string) {
-        await this.getCommentOnPublishedPoem(poemId, commentId);
- 
+        const comment = await this.getCommentOnPublishedPoem(poemId, commentId);
+
         try {
-            return await this.prisma.commentLike.delete({
+            const like = await this.prisma.commentLike.delete({
                 where: { userId_commentId: { userId, commentId } },
             });
+            await this.notifications.retract({
+                type: 'COMMENT_LIKE',
+                recipientId: comment.authorId,
+                actorId: userId,
+                poemId,
+                commentId,
+            });
+            return like;
         } catch (error) {
             if (this.isPrismaError(error, 'P2025')) {
                 throw new NotFoundException('Like not found');

@@ -28,7 +28,7 @@ export class LikesController {
         return this.likesService.addLike(poemId, req.user.sub)
     }
 
-    @Delete('poem/:poemId/likes')
+    @Delete('poems/:poemId/likes')
     @UseGuards(AuthGuard)
     removeLike(
         @Param('poemId') poemId: string,

@@ -44,3 +44,16 @@ const numberFormat = new Intl.NumberFormat("en-UK");
 export function formatCount(value: number) {
   return numberFormat.format(value);
 }
+/**
+ * Безопасный адрес для перехода после входа/регистрации (параметр `?next=`).
+ * Пропускаем только внутренние пути вида "/poems/123". Всё остальное —
+ * "https://evil.com", "//evil.com", "/\evil.com" — заменяем на fallback,
+ * иначе по ссылке с нашего сайта можно увести человека на чужой (open redirect).
+ */
+export function getSafeRedirect(value: unknown, fallback = "/") {
+  if (typeof value !== "string") return fallback;
+  if (!value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) {
+    return fallback;
+  }
+  return value;
+}

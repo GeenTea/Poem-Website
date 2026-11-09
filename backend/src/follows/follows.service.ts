@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException, ConflictException, BadRequestException } from "@nestjs/common";
 import { Prisma } from "generated/prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
+import { NotificationsService } from "src/notifications/notifications.service";
 
 @Injectable()
 export class FollowsService{
-    constructor(private readonly prisma: PrismaService){}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly notifications: NotificationsService,
+    ){}
 
     async startFollow(currentUserId: string, targetUserId: string){
         if(currentUserId === targetUserId){
@@ -28,6 +32,12 @@ export class FollowsService{
             throw e;
         }
 
+        await this.notifications.notify({
+            type: 'FOLLOW',
+            recipientId: targetUserId,
+            actorId: currentUserId,
+        })
+
         return { following:true}
     }
 
@@ -42,6 +52,12 @@ export class FollowsService{
         if(count === 0) {
             throw new NotFoundException('You are not following this user')
         }
+
+        await this.notifications.retract({
+            type: 'FOLLOW',
+            recipientId: targetUserId,
+            actorId: currentUserId,
+        })
 
         return { following: false}
     }

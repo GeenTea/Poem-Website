@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { UserMenu } from "../ui/usermenu";
 import { HeaderSearch } from "./HeaderSearch";
+import { NotificationBell } from "../notifications/NotificationBell";
 import { FeatherIcon, PencilIcon } from "../ui/icons";
 import { User } from "@/types/user";
 
@@ -59,6 +60,8 @@ export function Header({ user }: HeaderProps) {
                 <PencilIcon className="size-[18px] text-[var(--accent)]" />
                 <span className="hidden sm:inline">Write</span>
               </Link>
+
+              <NotificationBell />
 
               <UserMenu user={user} />
             </>

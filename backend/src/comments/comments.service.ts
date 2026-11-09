@@ -1,15 +1,19 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { CreateCommentDto } from './dto/create-comments.dto';
 import { UpdateCommentDto } from './dto/update-comments.dto';
 
 @Injectable()
 export class CommentsService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly notifications: NotificationsService,
+    ) {}
 
     async create(poemId: string, sub: string, dto: CreateCommentDto){
         const poem = await this.prisma.poem.findUnique({
-            select: { id: true },
+            select: { id: true, authorId: true },
             where: { 
                 id: poemId,
                 status: 'PUBLISHED'
@@ -20,15 +24,18 @@ export class CommentsService {
             throw new NotFoundException(`Poem with id ${poemId} not found`);
         }
 
+        let parentAuthorId: string | null = null;
+
         if(dto.parentId){
             const parent = await this.prisma.comment.findUnique({
                 where: {
                     id: dto.parentId,
                 },
                 select: {
-                    id: true, 
-                    poemId: true, 
-                    parentId: true
+                    id: true,
+                    poemId: true,
+                    parentId: true,
+                    authorId: true,
                 }
             })
 
@@ -39,9 +46,11 @@ export class CommentsService {
             if(parent.parentId){
                 throw new BadRequestException(`Cannot reply to a comment that is already a reply`);
             }
+
+            parentAuthorId = parent.authorId;
         }
 
-        return this.prisma.comment.create({
+        const comment = await this.prisma.comment.create({
             data: {
                 content: dto.content,
                 parentId: dto.parentId,
@@ -49,6 +58,17 @@ export class CommentsService {
                 authorId:sub
             }
         })
+
+        // Ответ — автору родительского комментария, обычный комментарий — автору стиха
+        await this.notifications.notify({
+            type: parentAuthorId ? 'COMMENT_REPLY' : 'POEM_COMMENT',
+            recipientId: parentAuthorId ?? poem.authorId,
+            actorId: sub,
+            poemId: poem.id,
+            commentId: comment.id,
+        })
+
+        return comment;
     }
 
     async delete(commentId: string, sub: string, poemId: string){

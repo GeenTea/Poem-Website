@@ -8,7 +8,12 @@ import { EyeClosed, EyeIcon } from "lucide-react";
 
 
 
-export function LoginForm() {
+type LoginFormProps = {
+  /** Куда перейти после успеха (уже проверено getSafeRedirect) */
+  next?: string;
+};
+
+export function LoginForm({ next = "/" }: LoginFormProps) {
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
   const [error,setError] = useState<string[]>([])
@@ -44,7 +49,10 @@ export function LoginForm() {
         return
       }
 
-      router.replace('/')
+      router.replace(next)
+      // layout (и хедер в нём) не перерисовывается при переходе —
+      // refresh заново запрашивает серверные компоненты уже с новой cookie
+      router.refresh()
     }catch(error){
       if(error instanceof Error){
         setError(prev=>[...prev,error.message])
@@ -102,7 +110,7 @@ export function LoginForm() {
           </div>
 
           <div>
-            <Link href={'/register'} className="text-[15px] hover:text-red-400">
+            <Link href={next === "/" ? '/register' : `/register?next=${encodeURIComponent(next)}`} className="text-[15px] hover:text-red-400">
               Create account
             </Link>
           </div>

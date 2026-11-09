@@ -6,7 +6,12 @@ import { useRouter } from "next/navigation";
 import { EyeClosed, EyeIcon } from "lucide-react";
 
 
-export function RegisterForm() {
+type RegisterFormProps = {
+  /** Куда перейти после успеха (уже проверено getSafeRedirect) */
+  next?: string;
+};
+
+export function RegisterForm({ next = "/" }: RegisterFormProps) {
   // TODO: реализовать
   const [username,setUserName] = useState<string>("")
   const [email, setEmail] = useState<string>("")
@@ -58,7 +63,10 @@ export function RegisterForm() {
 
       console.log('Authorize successfull')
 
-      router.replace('/')
+      router.replace(next)
+      // layout (и хедер в нём) не перерисовывается при переходе —
+      // refresh заново запрашивает серверные компоненты уже с новой cookie
+      router.refresh()
     }catch(error){
       if(error instanceof Error){
         setError(prev=>[...prev,error.message])
@@ -164,7 +172,7 @@ export function RegisterForm() {
           </div>
 
           <div>
-            <Link href={'/login'} className="text-[15px] hover:text-red-400">
+            <Link href={next === "/" ? '/login' : `/login?next=${encodeURIComponent(next)}`} className="text-[15px] hover:text-red-400">
               I have account
             </Link>
           </div>

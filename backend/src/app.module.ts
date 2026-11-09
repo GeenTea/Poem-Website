@@ -9,8 +9,9 @@ import { TagsModule } from './tags/tags.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
 import { FollowsModule } from './follows/follows.module';
+import { NotificationsModule } from './notifications/notifications.module';
 @Module({
-  imports: [PoemsModule, UsersModule, AuthModule,PrismaModule, TagsModule, LikesModule, CommentsModule, FollowsModule],
+  imports: [PoemsModule, UsersModule, AuthModule,PrismaModule, TagsModule, LikesModule, CommentsModule, FollowsModule, NotificationsModule],
   controllers: [AppController],
   providers: [AppService],
 })
