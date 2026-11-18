@@ -10,6 +10,7 @@ export interface NotifyInput {
     actorId: string;
     poemId?: string | null;
     commentId?: string | null;
+    reportId?: string | null;
 }
 
 // Для этих типов действие можно отменить (unlike / unfollow) и повторить —
@@ -88,6 +89,7 @@ export class NotificationsService {
                 },
                 poem: { select: { id: true, title: true } },
                 comment: { select: { id: true, content: true, poemId: true } },
+                report: { select: { id: true, reason: true, type: true } }, 
             },
         });
 
@@ -130,4 +132,26 @@ export class NotificationsService {
         });
         return { updated: count };
     }
+
+    async notifyModerators(input: Omit<NotifyInput, 'recipientId'>) {
+      try {
+          const moderators = await this.prisma.user.findMany({
+              where: { role: { in: ['MODERATOR', 'ADMIN'] }, 
+              id: { not: input.actorId } },
+              select: { id: true },
+          });
+          // createMany — одна вставка на всех вместо цикла из create
+          await this.prisma.notification.createMany({
+              data: moderators.map((m) => ({   type: input.type,
+                  recipientId: m.id,
+                  actorId: input.actorId,
+                  poemId: input.poemId ?? null,
+                  commentId: input.commentId ?? null,
+                  reportId: input.reportId ?? null,
+                })),
+          });
+      } catch (error) {
+          this.logger.error(`Failed to notify moderators about ${input.type}`, error);   // жалоба должна сохраниться, даже если уведомление нет
+      }
+  }
 }

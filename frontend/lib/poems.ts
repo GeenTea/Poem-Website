@@ -13,6 +13,7 @@ function toPoem(dto: PoemDto): Poem {
     readingMinutes: getReadingMinutes(text),
     tags: (dto.tags ?? []).map(({ tag }) => tag),
     author: {
+      id: dto.author.id,
       username: dto.author.username,
       displayName: dto.author.displayName || dto.author.username,
       avatarUrl: dto.author.avatarUrl,

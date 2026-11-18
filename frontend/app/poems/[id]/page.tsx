@@ -8,6 +8,7 @@ import { TagBadge } from "@/components/ui/TagBadge";
 import { Avatar } from "@/components/ui/Avatar";
 import { CommentSection } from "@/components/poems/CommentSection";
 import { ShareButton } from "@/components/poems/ShareButton";
+import { ReportPoemButton } from "@/components/poems/ReportPoemButton";
 import { formatCount, formatRelativeDate } from "@/lib/utils";
 
 // Поля, которых может не быть в типе Poem. Если они есть в types/user.ts — этот тип можно убрать.
@@ -110,6 +111,15 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
                 {formatCount(poem.stats.likes)} likes
               </span>
               <ShareButton title={poem.title} />
+              {/* Пожаловаться может только вошедший и не на свой стих */}
+              {viewer && viewer.id !== author.id && (
+                <ReportPoemButton
+                  poemId={poem.id}
+                  title={poem.title}
+                  excerpt={poem.text.split("\n").slice(0, 4).join("\n")}
+                  authorName={author.displayName}
+                />
+              )}
             </footer>
           </article>
 

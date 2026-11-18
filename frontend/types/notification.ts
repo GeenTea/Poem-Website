@@ -3,7 +3,8 @@ export type NotificationType =
   | "POEM_COMMENT"
   | "COMMENT_REPLY"
   | "COMMENT_LIKE"
-  | "FOLLOW";
+  | "FOLLOW"
+  | "REPORT_CREATED";
 
 /** Уведомление в том виде, как его отдаёт NestJS (`GET /notifications`). */
 export interface AppNotification {
@@ -19,6 +20,7 @@ export interface AppNotification {
   };
   poem: { id: string; title: string } | null;
   comment: { id: string; content: string; poemId: string } | null;
+  report: { id: string; reason: string; type: "COMMENT" | "POEM" | "USER" } | null;
 }
 
 export interface NotificationPage {

@@ -12,14 +12,21 @@ export class CommentRequestError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`/api/poems/${path}`, {
+// Общая часть всех запросов: JSON-заголовок, проверка статуса, разбор ответа.
+// url — полный путь от корня сайта, например "/api/reports".
+async function send<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, {
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
   });
   if (!res.ok) throw new CommentRequestError(res.status);
   const text = await res.text();
   return (text ? JSON.parse(text) : undefined) as T;
+}
+
+// Запросы к комментариям: /api/poems/<path>
+function request<T>(path: string, init?: RequestInit): Promise<T> {
+  return send<T>(`/api/poems/${path}`, init);
 }
 
 const enc = encodeURIComponent;
@@ -43,6 +50,7 @@ export const commentsApi = {
     }),
   remove: (poemId: string, commentId: string) =>
     request<void>(`${enc(poemId)}/comments/${enc(commentId)}`, { method: "DELETE" }),
+  // Жалобы на комментарии — в lib/reports-api.ts (reportsApi.create("COMMENT", ...))
 };
 
 export function commentErrorMessage(error: unknown) {

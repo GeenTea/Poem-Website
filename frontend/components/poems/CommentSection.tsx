@@ -13,6 +13,8 @@ import {
 } from "@/lib/comments-api";
 import type { CommentViewer, PoemComment } from "@/types/comment";
 import { CommentMenu, type CommentMenuItem } from "@/components/poems/CommentMenu";
+import { ReportDialog } from "@/components/poems/ReportDialog";
+import { reportsApi } from "@/lib/reports-api";
 
 type Props = {
   poemId: string;
@@ -190,6 +192,7 @@ function CommentItem({ comment, poemId, viewer, onUpdated, onDeleted, onCountCha
   const author = comment.author;
   const name = author?.displayName || author?.username || "Reader";
   const [notice, setNotice] = useState<string | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
   const isOwner = viewer?.id === comment.authorId;
   const canDelete = isOwner || viewer?.role === "ADMIN" || viewer?.role === "MODERATOR";
   const replyCount = replies?.length ?? comment._count?.replies;
@@ -232,11 +235,18 @@ function CommentItem({ comment, poemId, viewer, onUpdated, onDeleted, onCountCha
     }
   }
 
-  // ЗАГЛУШКА: на бэкенде пока нет эндпоинта жалоб (см. Issues-Pending.md).
-  // Когда появится — добавить commentsApi.report(poemId, comment.id, reason) и вызвать его здесь.
+  // Жалоба: пункт «Report» в меню открывает окно ReportDialog
   function handleReport() {
     setError(null);
-    setNotice("Thanks — reporting will be available soon.");
+    setNotice(null);
+    setReportOpen(true);
+  }
+
+  // Вызывается окном. Ошибку не ловим — её покажет само окно и останется открытым.
+  async function submitReport(reason: string) {
+    await reportsApi.create("COMMENT", comment.id, reason);
+    setReportOpen(false);
+    setNotice("Thanks — your report has been sent to the moderators.");
   }
 
   async function handleDelete() {
@@ -308,6 +318,17 @@ function CommentItem({ comment, poemId, viewer, onUpdated, onDeleted, onCountCha
 
       {error && <p className="mt-2 text-xs text-berry">{error}</p>}
       {notice && !error && <p className="mt-2 text-xs text-ink-muted">{notice}</p>}
+
+      {/* Рендерим, только пока открыто: так при каждом открытии поле пустое */}
+      {reportOpen && (
+        <ReportDialog
+          title="Report this note"
+          quote={comment.content}
+          authorName={name}
+          onSubmit={submitReport}
+          onClose={() => setReportOpen(false)}
+        />
+      )}
 
       {!isReply && mode !== "edit" && (
         <div className="-ml-2.5 mt-3 flex flex-wrap items-center gap-1">

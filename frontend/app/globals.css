@@ -103,6 +103,41 @@ body {
   backdrop-filter: blur(16px) saturate(150%);
 }
 
+/* ---------- Модальные окна (<dialog class="modal">) ---------- */
+
+/* Фон за окном: затемнение + размытие всей страницы */
+dialog.modal::backdrop {
+  background: rgba(47, 49, 34, 0.35);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: modal-fade 0.2s ease-out;
+}
+
+/* Само окно плавно «всплывает» */
+dialog.modal[open] {
+  animation: modal-pop 0.2s ease-out;
+}
+
+/* Пока окно открыто, страница под ним не прокручивается */
+html:has(dialog.modal[open]) {
+  overflow: hidden;
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+}
+
+@keyframes modal-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.modal[open],
+  dialog.modal::backdrop {
+    animation: none;
+  }
+}
+
 @theme inline {
   --color-cream: var(--cream);
   --color-sand: var(--sand);

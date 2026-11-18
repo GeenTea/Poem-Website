@@ -50,6 +50,8 @@ model User {
 
   notifications       Notification[] @relation("NotificationRecipient")
   causedNotifications Notification[] @relation("NotificationActor")
+  reportsMade     Report[] @relation("ReportReporter")
+  reportsReceived Report[] @relation("ReportTarget")
 }
 
 model Poem {
@@ -71,6 +73,7 @@ model Poem {
   comments Comment[]
   tags PoemTag[]
   notifications Notification[]
+  reports Report[]
 }
 
 model Session {
@@ -108,6 +111,7 @@ model Comment {
 
   commentLikes  CommentLike[]
   notifications Notification[]
+  reports Report[]
 
   @@index([authorId])
   @@index([poemId, createdAt])
@@ -179,6 +183,7 @@ enum NotificationType {
   COMMENT_REPLY
   COMMENT_LIKE
   FOLLOW
+  REPORT_CREATED
 }
 
 model Notification {
@@ -197,9 +202,45 @@ model Notification {
   commentId String?
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
+  reportId String?
+  report Report? @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
   readAt    DateTime?
   createdAt DateTime  @default(now())
 
   @@index([recipientId, createdAt])
   @@index([recipientId, readAt])
+}
+
+enum ReportType {
+  COMMENT
+  POEM
+  USER
+}
+
+model Report {
+  id String @id @default(cuid())
+  type ReportType
+  reason String
+
+  reporterId String
+  reporter User @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  // На кого жалоба: автор комментария/стиха (или сам пользователь для type = USER)
+  targetUserId String
+  targetUser   User   @relation("ReportTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  poemId String?
+  poem Poem? @relation(fields: [poemId], references: [id], onDelete: Cascade)
+
+  commentId String?
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  notification Notification[]
+
+  @@index([reporterId, createdAt])
+  @@index([targetUserId])
+  @@unique([reporterId, commentId])
 }

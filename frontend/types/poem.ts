@@ -4,6 +4,7 @@ export interface Tag {
 }
 
 export interface Author {
+  id: string;
   username: string;
   displayName: string;
   avatarUrl: string | null;
