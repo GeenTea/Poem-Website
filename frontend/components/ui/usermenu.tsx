@@ -65,6 +65,14 @@ function Panel(){
         </li>
         <li>
           <Link
+            href="/my-poems"
+            className="focus-ring block rounded-md px-3 py-2 transition-colors hover:bg-[var(--glass-hover)]"
+          >
+            My poems
+          </Link>
+        </li>
+        <li>
+          <Link
             href="/settings"
             className="focus-ring block rounded-md px-3 py-2 transition-colors hover:bg-[var(--glass-hover)]"
           >

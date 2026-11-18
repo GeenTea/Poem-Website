@@ -2,6 +2,7 @@ import { Hero } from "@/components/layout/Hero";
 import { PoemFeed } from "@/components/poems/PoemsFeeds";
 import { TagFilter } from "@/components/poems/TagFilter";
 import { getPoems, getTags } from "@/lib/poems";
+import { getCurrentUser } from "@/lib/auth";
 
 interface HomePageProps {
   searchParams: Promise<{ tag?: string }>;
@@ -17,7 +18,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       getTags().catch((error) => {
         console.error(error); 
         return[];
-      })
+      }),
+      // Кто смотрит — для меню «⋯» на карточках (null — гость)
+      getCurrentUser(),
     ]);
   } catch (error) {
     console.error(error);
@@ -30,7 +33,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     );
   }
 
-  const [poems, tags] = data;
+  const [poems, tags, viewer] = data;
 
   return (
     <main className="mx-auto w-full max-w-[90rem] px-6 py-12">
@@ -38,6 +41,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <TagFilter tags={tags} activeSlug={tag} />
       <PoemFeed
         poems={poems}
+        viewer={viewer}
         emptyMessage={tag ? "No poems with this tag yet." : undefined}
       />
     </main>

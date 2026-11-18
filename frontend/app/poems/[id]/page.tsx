@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPoem } from "@/lib/poems";
+import { getPoemForViewer } from "@/lib/poems";
 import { getCurrentUser } from "@/lib/auth";
-import type { CommentViewer } from "@/types/comment";
+import type { User } from "@/types/user";
+import type { Poem } from "@/types/poem";
 import { ApiError } from "@/lib/poem-api";
 import { TagBadge } from "@/components/ui/TagBadge";
 import { Avatar } from "@/components/ui/Avatar";
 import { CommentSection } from "@/components/poems/CommentSection";
 import { ShareButton } from "@/components/poems/ShareButton";
 import { ReportPoemButton } from "@/components/poems/ReportPoemButton";
+import { PoemActions } from "@/components/poems/PoemActions";
 import { formatCount, formatRelativeDate } from "@/lib/utils";
 
 // Поля, которых может не быть в типе Poem. Если они есть в types/user.ts — этот тип можно убрать.
@@ -32,7 +34,8 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
 
   let poem;
   try {
-    poem = await getPoem(id);
+    // Опубликованный — всем; черновик/скрытый — автору (и скрытый — модераторам)
+    poem = await getPoemForViewer(id);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       notFound();
@@ -50,7 +53,11 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
   }).format(new Date(poem.publishedAt));
 
   // Текущий пользователь из httpOnly-cookie; null — гость (может только читать)
-  const viewer: CommentViewer | null = await getCurrentUser();
+  const viewer: User | null = await getCurrentUser();
+
+  const isPublished = poem.status === "PUBLISHED";
+  const isAuthor = viewer?.id === author.id;
+  const hiddenByModerator = poem.status === "ARCHIVED" && poem.hiddenById !== author.id;
 
   // TODO: другие поэмы автора, например getPoems({ author: author.username, limit: 3 }),
   // без текущей. Пока пусто — карточка «More from» не показывается.
@@ -62,10 +69,33 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
         {/* ---------- Левая колонка ---------- */}
         <div className="min-w-0">
           <article className={`${card} px-6 py-9 sm:px-12 sm:py-12`}>
+            {!isPublished && (
+              <StatusBanner
+                poemId={poem.id}
+                status={poem.status}
+                isAuthor={isAuthor}
+                hiddenByModerator={hiddenByModerator}
+              />
+            )}
+
             <header>
-              <p className="text-xs font-medium uppercase tracking-[0.18em] text-berry">
-                Poem · {poem.readingMinutes} min read
-              </p>
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-xs font-medium uppercase tracking-[0.18em] text-berry">
+                  Poem · {poem.readingMinutes} min read
+                </p>
+                {/* Меню «⋯» (Edit / Hide / Unhide) — само решает, что показать этому пользователю */}
+                <div className="-mr-2 -mt-2">
+                  <PoemActions
+                    poem={{
+                      id: poem.id,
+                      status: poem.status,
+                      hiddenById: poem.hiddenById,
+                      authorId: author.id,
+                    }}
+                    viewer={viewer}
+                  />
+                </div>
+              </div>
 
               <h1 className="mt-4 text-balance font-serif text-4xl leading-tight text-ink sm:text-5xl">
                 {poem.title}
@@ -110,9 +140,10 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
                 <HeartIcon className="h-4 w-4 text-berry" />
                 {formatCount(poem.stats.likes)} likes
               </span>
-              <ShareButton title={poem.title} />
+              {/* Делиться и жаловаться есть смысл только на опубликованный стих */}
+              {isPublished && <ShareButton title={poem.title} />}
               {/* Пожаловаться может только вошедший и не на свой стих */}
-              {viewer && viewer.id !== author.id && (
+              {isPublished && viewer && !isAuthor && (
                 <ReportPoemButton
                   poemId={poem.id}
                   title={poem.title}
@@ -123,11 +154,14 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
             </footer>
           </article>
 
-          <CommentSection
-            poemId={poem.id}
-            initialCount={poem.stats.comments}
-            viewer={viewer}
-          />
+          {/* API комментариев работает только для опубликованных стихов */}
+          {isPublished && (
+            <CommentSection
+              poemId={poem.id}
+              initialCount={poem.stats.comments}
+              viewer={viewer}
+            />
+          )}
         </div>
 
         {/* ---------- Боковая панель ---------- */}
@@ -189,6 +223,52 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
         </aside>
       </div>
     </main>
+  );
+}
+
+/** Плашка над заголовком у черновика и скрытого стиха */
+function StatusBanner({
+  poemId,
+  status,
+  isAuthor,
+  hiddenByModerator,
+}: {
+  poemId: string;
+  status: Poem["status"];
+  isAuthor: boolean;
+  hiddenByModerator: boolean;
+}) {
+  const isDraft = status === "DRAFT";
+  const text = isDraft
+    ? "Draft — only you can see it."
+    : isAuthor && hiddenByModerator
+      ? "Hidden by a moderator. Only moderators can bring it back."
+      : "Hidden — only you and moderators can see it.";
+
+  return (
+    <div
+      role="status"
+      className={`mb-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-2xl border px-4 py-3 text-sm ${
+        isDraft
+          ? "border-leaf/50 bg-leaf/10 text-leaf-deep"
+          : "border-berry/30 bg-berry/10 text-berry"
+      }`}
+    >
+      <span>
+        <span className="mr-2 text-xs font-medium uppercase tracking-[0.18em]">
+          {isDraft ? "Draft" : "Hidden"}
+        </span>
+        {text}
+      </span>
+      {isDraft && isAuthor && (
+        <Link
+          href={`/poems/${poemId}/edit`}
+          className="focus-ring rounded-full font-medium underline underline-offset-4 hover:text-ink"
+        >
+          Continue editing
+        </Link>
+      )}
+    </div>
   );
 }
 

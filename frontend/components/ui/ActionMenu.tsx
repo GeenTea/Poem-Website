@@ -2,15 +2,15 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 
-export type CommentMenuItem = {
+export type ActionMenuItem = {
   label: string;
   onSelect: () => void;
   danger?: boolean;
   disabled?: boolean;
 };
 
-/** Кнопка «⋯» с выпадающим списком действий над комментарием. */
-export function CommentMenu({ items }: { items: CommentMenuItem[] }) {
+/** Кнопка «⋯» с выпадающим списком действий (комментарий, стих…). */
+export function ActionMenu({ items, label = "Actions" }: { items: ActionMenuItem[]; label?: string }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
@@ -38,7 +38,7 @@ export function CommentMenu({ items }: { items: CommentMenuItem[] }) {
     <div ref={rootRef} className="relative shrink-0">
       <button
         type="button"
-        aria-label="Comment actions"
+        aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}

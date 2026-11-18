@@ -1,5 +1,6 @@
 import { PoemFeed } from "@/components/poems/PoemsFeeds";
 import { getPoems } from "@/lib/poems";
+import { getCurrentUser } from "@/lib/auth";
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string }>;
@@ -14,15 +15,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <main className="mx-auto w-full max-w-[90rem] px-6 py-12">
         <h1 className="mb-4 font-serif text-3xl">Search</h1>
         <p className="text-ink-muted">
-          Type a title, a line or an author's name in the search bar above.
+          Type a title, a line or an author&apos;s name in the search bar above.
         </p>
       </main>
     );
   }
 
   let poems;
+  let viewer;
   try {
-    poems = await getPoems({ q: query });
+    // Стихи и текущий пользователь (для меню «⋯») — параллельно
+    [poems, viewer] = await Promise.all([getPoems({ q: query }), getCurrentUser()]);
   } catch (error) {
     console.error(error);
     return (
@@ -39,6 +42,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <h1 className="mb-8 font-serif text-3xl">Results for “{query}”</h1>
       <PoemFeed
         poems={poems}
+        viewer={viewer}
         title={`${poems.length} found`}
         emptyMessage={`Nothing found for “${query}”. Try another word.`}
       />

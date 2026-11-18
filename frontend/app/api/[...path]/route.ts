@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
+import { revalidateTag } from "next/cache";
 
 // Прокси к NestJS: /api/<path> → ${API_URL}/<path>.
 // Браузер не видит httpOnly-cookie accessToken, а сервер видит —
@@ -27,6 +28,12 @@ async function proxy(request: NextRequest, ctx: RouteContext<"/api/[...path]">) 
       body: hasBody ? await request.text() : undefined,
       cache: "no-store",
     });
+
+    // Стихи, лайки, комментарии изменились → сбрасываем кэш ленты (тег "poems" в lib/poem-api.ts),
+    // иначе лента показывала бы старые данные до минуты.
+    if (hasBody && res.ok && (path[0] === "poems" || path[0] === "poem")) {
+      revalidateTag("poems", { expire: 0 });
+    }
 
     return new Response(res.status === 204 ? null : res.body, {
       status: res.status,

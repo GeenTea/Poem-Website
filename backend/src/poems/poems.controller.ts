@@ -1,45 +1,66 @@
-import { Post, Delete, Get, Body, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/guards/auth.guards';
+import type { RequestWithUser } from 'src/auth/types/request-with-user';
 import { CreatePoemDto } from './dto/create-poem.dto';
 import { UpdatePoemDto } from './dto/update-poem.dto';
-import { Controller } from '@nestjs/common';
 import { PoemsService } from './poems.service';
 
+// Права «автор / модератор» зависят от конкретного стиха, поэтому проверяются в сервисе.
+// Контроллер только требует вход (AuthGuard) и передаёт id пользователя из токена.
 @Controller('poems')
 export class PoemsController {
     constructor(private readonly poemsService: PoemsService) {}
 
-    @Post('createPoem')
-    create(@Body() dto: CreatePoemDto) {
-        return this.poemsService.create(dto)
+    @UseGuards(AuthGuard)
+    @Post()
+    create(@Body() dto: CreatePoemDto, @Req() req: RequestWithUser) {
+        return this.poemsService.create(dto, req.user.sub);
     }
 
-    @Get('/findall')
+    @Get('findall')
     findAll(@Query('tag') tag?: string, @Query('q') q?: string) {
-        return this.poemsService.findAll(tag, q)
+        return this.poemsService.findAll(tag, q);
     }
 
-    @Get("/findPoem/:id")
-    findOne(@Param('id') id: string,) {
-        return this.poemsService.findOne(id)
+    // Статические пути объявляем раньше путей с :id
+    @UseGuards(AuthGuard)
+    @Get('mine')
+    findMine(@Req() req: RequestWithUser) {
+        return this.poemsService.findMine(req.user.sub);
     }
 
-    @Patch('/:id')
-    update(@Param('id') id: string, @Body() dto: UpdatePoemDto) {
-        return this.poemsService.update(id, dto)
+    @Get('findPoem/:id')
+    findOne(@Param('id') id: string) {
+        return this.poemsService.findOne(id);
     }
 
-    @Delete('/:id')
-    delete(@Param('id') id: string) {
-        return this.poemsService.delete(id)
+    @UseGuards(AuthGuard)
+    @Get(':id/private')
+    findPrivate(@Param('id') id: string, @Req() req: RequestWithUser) {
+        return this.poemsService.findPrivate(id, req.user.sub);
     }
 
-    @Patch('/status/:id/publish')
-    publish(@Param('id') id: string) {
-        return this.poemsService.updateStatus(id, 'PUBLISHED')
+    @UseGuards(AuthGuard)
+    @Patch(':id/hide')
+    hide(@Param('id') id: string, @Req() req: RequestWithUser) {
+        return this.poemsService.hide(id, req.user.sub);
     }
 
-    @Patch('/status/:id/archive')
-    archive(@Param('id') id: string) {
-        return this.poemsService.updateStatus(id, 'ARCHIVED')
+    @UseGuards(AuthGuard)
+    @Patch(':id/unhide')
+    unhide(@Param('id') id: string, @Req() req: RequestWithUser) {
+        return this.poemsService.unhide(id, req.user.sub);
+    }
+
+    @UseGuards(AuthGuard)
+    @Patch(':id')
+    update(@Param('id') id: string, @Body() dto: UpdatePoemDto, @Req() req: RequestWithUser) {
+        return this.poemsService.update(id, dto, req.user.sub);
+    }
+
+    @UseGuards(AuthGuard)
+    @Delete(':id')
+    delete(@Param('id') id: string, @Req() req: RequestWithUser) {
+        return this.poemsService.delete(id, req.user.sub);
     }
 }

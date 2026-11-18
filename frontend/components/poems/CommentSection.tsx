@@ -12,7 +12,7 @@ import {
   withViewer,
 } from "@/lib/comments-api";
 import type { CommentViewer, PoemComment } from "@/types/comment";
-import { CommentMenu, type CommentMenuItem } from "@/components/poems/CommentMenu";
+import { ActionMenu, type ActionMenuItem } from "@/components/ui/ActionMenu";
 import { ReportDialog } from "@/components/poems/ReportDialog";
 import { reportsApi } from "@/lib/reports-api";
 
@@ -263,7 +263,7 @@ function CommentItem({ comment, poemId, viewer, onUpdated, onDeleted, onCountCha
   }
 
   // Гостю меню не показываем: и редактирование, и жалоба требуют входа
-  const menuItems: CommentMenuItem[] = [];
+  const menuItems: ActionMenuItem[] = [];
   if (viewer) {
     if (isOwner) menuItems.push({ label: "Edit", onSelect: () => setMode("edit") });
     if (canDelete) menuItems.push({ label: "Delete", onSelect: handleDelete, danger: true, disabled: deleting });
@@ -297,7 +297,7 @@ function CommentItem({ comment, poemId, viewer, onUpdated, onDeleted, onCountCha
           <div className="flex min-w-0 items-center gap-3">{authorBlock}</div>
         )}
 
-        {mode !== "edit" && <CommentMenu items={menuItems} />}
+        {mode !== "edit" && <ActionMenu items={menuItems} label="Comment actions" />}
       </header>
 
       {mode === "edit" ? (

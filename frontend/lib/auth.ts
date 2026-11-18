@@ -1,6 +1,12 @@
 import { cookies } from "next/headers";
+import type { User } from "@/types/user";
 
-export async function getCurrentUser(){
+/** accessToken из httpOnly-cookie (только на сервере) */
+export async function getAccessToken() {
+    return (await cookies()).get("accessToken")?.value ?? null
+}
+
+export async function getCurrentUser(): Promise<User | null>{
     const cookieStore = await cookies()
     const token = cookieStore.get("accessToken")?.value
 

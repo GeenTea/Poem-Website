@@ -85,3 +85,6 @@ next-env.d.ts
 .claude
 CLAUDE.md
 CLAUDE.md.bak-*
+
+# design files
+/design

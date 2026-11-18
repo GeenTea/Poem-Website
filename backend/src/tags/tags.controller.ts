@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nes
 import { AuthGuard } from 'src/auth/guards/auth.guards';
 import { AddTagsDto } from './dto/add-tags.dto';
 import { TagsService } from './tags.service';
+import type { RequestWithUser } from 'src/auth/types/request-with-user';
 
 @Controller()
 export class TagsController {
@@ -19,13 +20,13 @@ export class TagsController {
 
   @UseGuards(AuthGuard)
   @Post('poems/:poemId/tags')
-  addTags(@Req() req, @Param('poemId') poemId: string, @Body() dto: AddTagsDto) {
-    return this.tagsService.addTagsToPoem(req.user.id, poemId, dto.slugs);
+  addTags(@Req() req: RequestWithUser, @Param('poemId') poemId: string, @Body() dto: AddTagsDto) {
+    return this.tagsService.addTagsToPoem(req.user.sub, poemId, dto.slugs);
   }
 
   @UseGuards(AuthGuard)
   @Delete('poems/:poemId/tags/:slug')
-  removeTag(@Req() req, @Param('poemId') poemId: string, @Param('slug') slug: string) {
-    return this.tagsService.removeTagFromPoem(req.user.id, poemId, slug);
+  removeTag(@Req() req: RequestWithUser, @Param('poemId') poemId: string, @Param('slug') slug: string) {
+    return this.tagsService.removeTagFromPoem(req.user.sub, poemId, slug);
   }
 }
