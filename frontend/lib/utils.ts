@@ -57,3 +57,16 @@ export function getSafeRedirect(value: unknown, fallback = "/") {
   }
   return value;
 }
+
+/**
+ * Адрес аватара для <img>/<Image>.
+ * Загруженные аватары бэкенд хранит как "/uploads/avatars/..." — отдаём их через наш
+ * прокси "/api/uploads/...": так картинка идёт с того же домена, и next/image её
+ * оптимизирует (картинки с localhost:3001 Next.js 16 по умолчанию не грузит).
+ * Внешние ссылки (https://...) возвращаем как есть.
+ */
+export function resolveAvatarUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith("/uploads/")) return `/api${url}`;
+  return url;
+}

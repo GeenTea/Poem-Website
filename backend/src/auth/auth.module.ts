@@ -4,6 +4,8 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from 'src/users/users.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { MailModule } from 'src/mail/mail.module';
+import { PasswordResetService } from './password-reset.service';
 @Module({
     imports: [
         UsersModule,
@@ -14,10 +16,11 @@ import { PrismaModule } from 'src/prisma/prisma.module';
                 expiresIn: '1h',
             },
         }),
-        PrismaModule
+        PrismaModule,
+        MailModule,
     ],
     controllers:[AuthController],
-    providers:[AuthService],
+    providers:[AuthService, PasswordResetService],
 })
 export class AuthModule {
 }

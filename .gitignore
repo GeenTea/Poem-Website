@@ -88,3 +88,6 @@ CLAUDE.md.bak-*
 
 # design files
 /design
+
+# Загруженные пользователями файлы (аватары)
+backend/uploads/

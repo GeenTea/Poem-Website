@@ -37,6 +37,15 @@ export class LikesController {
         return this.likesService.removeLike(poemId, req.user.sub)
     }
 
+    @Get('poems/:poemId/likes/me')
+    @UseGuards(AuthGuard)
+    isPoemLiked(
+        @Param('poemId') poemId: string,
+        @Req() req: RequestWithUser,
+    ){
+        return this.likesService.isPoemLiked(poemId, req.user.sub)
+    }
+
     @Get('poems/:poemId/likes/count')
     showPoemLikesCount(@Param('poemId') poemId: string){
         return this.likesService.showPoemLikesCount(poemId)

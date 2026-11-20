@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { cn, getInitials } from "@/lib/utils";
+import { cn, getInitials, resolveAvatarUrl } from "@/lib/utils";
 
 const sizes = {
   sm: { box: "size-7 text-xs", px: 28 },
   md: { box: "size-9 text-sm", px: 36 },
   lg: { box: "size-14 text-lg", px: 56 },
+  xl: { box: "size-20 text-2xl", px: 80 },
 };
 
 interface AvatarProps {
@@ -16,11 +17,12 @@ interface AvatarProps {
 
 export function Avatar({ name, src, size = "md", className }: AvatarProps) {
   const { box, px } = sizes[size];
+  const url = resolveAvatarUrl(src);
 
-  if (src) {
+  if (url) {
     return (
       <Image
-        src={src}
+        src={url}
         alt={name}
         width={px}
         height={px}

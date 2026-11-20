@@ -1,6 +1,10 @@
 import type { Poem, Tag } from "@/types/poem";
+import type { AuthorProfile } from "@/types/user";
 import {
   ApiError,
+  fetchAuthorProfile,
+  fetchIsFollowing,
+  fetchIsLiked,
   fetchMyPoems,
   fetchPoemById,
   fetchPoems,
@@ -81,4 +85,31 @@ export async function getTags(): Promise<Tag[]>{
 export async function getAllTags(): Promise<Tag[]> {
   const dtos = await fetchTags();
   return dtos.map(({ name, slug }) => ({ name, slug })).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** Профиль автора по username. Нет такого → ApiError 404 */
+export function getAuthorProfile(username: string): Promise<AuthorProfile> {
+  return fetchAuthorProfile(username);
+}
+
+/** Подписан ли текущий пользователь на автора. Гость или ошибка → false */
+export async function getIsFollowing(authorId: string): Promise<boolean> {
+  const token = await getAccessToken();
+  if (!token) return false;
+  try {
+    return (await fetchIsFollowing(authorId, token)).following;
+  } catch {
+    return false;
+  }
+}
+
+/** Лайкнул ли текущий пользователь стих. Гость или ошибка → false */
+export async function getIsLiked(poemId: string): Promise<boolean> {
+  const token = await getAccessToken();
+  if (!token) return false;
+  try {
+    return (await fetchIsLiked(poemId, token)).liked;
+  } catch {
+    return false;
+  }
 }

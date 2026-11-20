@@ -1,6 +1,7 @@
 // Серверные запросы к NestJS (Server Components). В браузере не используется —
 // для изменений из браузера есть lib/poems-client-api.ts.
 import type { PoemStatus } from "@/types/poem";
+import type { AuthorProfile } from "@/types/user";
 
 export interface PoemDto {
   id: string;
@@ -33,6 +34,8 @@ export interface TagDto{
 export interface PoemFilters {
   tag?: string;
   q?: string;
+  /** username автора */
+  author?: string;
 }
 
 export class ApiError extends Error{
@@ -71,10 +74,11 @@ async function requestWithToken<T>(path: string, token: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function fetchPoems({tag, q} : PoemFilters = {}) {
+export function fetchPoems({tag, q, author} : PoemFilters = {}) {
   const params = new URLSearchParams();
   if(tag) params.set("tag", tag);
   if(q) params.set("q", q)
+  if(author) params.set("author", author)
 
   const query = params.toString();
 
@@ -98,4 +102,22 @@ export function fetchMyPoems(token: string) {
 
 export function fetchTags(){
   return request<TagDto[]>("/tags")
+}
+
+/** Публичный профиль автора. Без кэша: число подписчиков меняется после каждой подписки */
+export async function fetchAuthorProfile(username: string) {
+  const path = `/users/${encodeURIComponent(username)}/profile`;
+  const res = await fetch(`${API_URL}${path}`, { cache: "no-store" });
+  if (!res.ok) throw new ApiError(res.status, `API ${path} response ${res.status}`);
+  return res.json() as Promise<AuthorProfile>;
+}
+
+/** Подписан ли текущий пользователь на автора */
+export function fetchIsFollowing(authorId: string, token: string) {
+  return requestWithToken<{ following: boolean }>(`/users/${encodeURIComponent(authorId)}/follow`, token);
+}
+
+/** Лайкнул ли текущий пользователь стих */
+export function fetchIsLiked(poemId: string, token: string) {
+  return requestWithToken<{ liked: boolean }>(`/poems/${encodeURIComponent(poemId)}/likes/me`, token);
 }

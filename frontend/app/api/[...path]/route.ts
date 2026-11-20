@@ -25,7 +25,8 @@ async function proxy(request: NextRequest, ctx: RouteContext<"/api/[...path]">) 
     const res = await fetch(target, {
       method: request.method,
       headers,
-      body: hasBody ? await request.text() : undefined,
+      // arrayBuffer, а не text(): иначе двоичные файлы (аватары) испортятся при пересылке
+      body: hasBody ? await request.arrayBuffer() : undefined,
       cache: "no-store",
     });
 

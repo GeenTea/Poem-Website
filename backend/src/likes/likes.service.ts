@@ -56,6 +56,15 @@ export class LikesService {
         }
     }
  
+    // Лайкнул ли текущий пользователь стих — чтобы показать закрашенное сердце
+    async isPoemLiked(poemId: string, userId: string) {
+        const like = await this.prisma.like.findUnique({
+            where: { poemId_userId: { poemId, userId } },
+            select: { poemId: true },
+        });
+        return { liked: !!like };
+    }
+
     async showPoemLikesCount(poemId: string) {
         await this.getPublishedPoem(poemId);
  

@@ -46,6 +46,6 @@ export class FollowController{
     @UseGuards(AuthGuard)
     @Get('follow')
     isFollowing(@Req() req, @Param('id') targetId: string){
-        return this.followsService.isFollowing(req.user.id, targetId)
+        return this.followsService.isFollowing(req.user.sub, targetId)
     }
 }

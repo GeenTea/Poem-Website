@@ -119,6 +119,13 @@ export class AuthService {
 
 
 
+    /** Новая сессия + пара токенов — как при входе. Используется после смены пароля */
+    async issueTokens(userId: string) {
+        const { session, refreshToken } = await this.createSession(userId);
+        const accessToken = this.createAccessToken(userId, session.id);
+        return { accessToken, refreshToken };
+    }
+
     private createAccessToken(userId: string, sessionId: string): string{
 
         return this.jwtService.sign({

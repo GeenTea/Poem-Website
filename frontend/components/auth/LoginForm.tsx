@@ -85,7 +85,7 @@ export function LoginForm({ next = "/" }: LoginFormProps) {
 
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="text-[17px]">Password</label>
-            <Link href={'/'} className="text-[17px]">Forgot Password?</Link>
+            <Link href="/forgot-password" className="text-[17px]">Forgot Password?</Link>
           </div>
 
           

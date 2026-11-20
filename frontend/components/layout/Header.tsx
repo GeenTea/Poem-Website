@@ -9,13 +9,6 @@ type HeaderProps = {
   user?: User | null;
 };
 
-const navLinks = [
-  { href: "/", label: "Feed" },
-  { href: "/poets", label: "Poets" },
-  { href: "/featured", label: "Featured" },
-];
-
-
 export function Header({ user }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6 sm:pt-5">
@@ -32,20 +25,6 @@ export function Header({ user }: HeaderProps) {
             Poem Nest
           </span>
         </Link>
-
-        {/* Навигация */}
-        <ul className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className="focus-ring rounded-md text-sm text-[var(--ink-muted)] transition-colors hover:text-[var(--ink)]"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
 
         {/* Действия справа */}
         <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">

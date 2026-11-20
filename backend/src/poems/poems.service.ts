@@ -184,12 +184,13 @@ export class PoemsService {
         throw new NotFoundException(`Poem with id ${id} not found`);
     }
 
-    async findAll(tag?: string, q?: string) {
+    async findAll(tag?: string, q?: string, author?: string) {
         const search = q?.trim();
 
         return this.prisma.poem.findMany({
             where: {
                 status: 'PUBLISHED',
+                ...(author && { author: { username: author } }),
                 ...(tag && {
                     tags: {
                         some: {

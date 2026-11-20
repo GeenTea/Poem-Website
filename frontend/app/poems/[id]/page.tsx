@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPoemForViewer } from "@/lib/poems";
+import { getIsLiked, getPoemForViewer } from "@/lib/poems";
+import { LikeButton } from "@/components/poems/LikeButton";
 import { getCurrentUser } from "@/lib/auth";
 import type { User } from "@/types/user";
 import type { Poem } from "@/types/poem";
@@ -76,6 +77,8 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
 
   const isPublished = poem.status === "PUBLISHED";
   const isAuthor = viewer?.id === author.id;
+  // Закрашено ли сердце: спрашиваем бэкенд только у вошедшего и только для опубликованного
+  const isLiked = viewer && isPublished ? await getIsLiked(poem.id) : false;
   const hiddenByModerator = poem.status === "ARCHIVED" && poem.hiddenById !== author.id;
 
   // TODO: другие поэмы автора, например getPoems({ author: author.username, limit: 3 }),
@@ -154,11 +157,20 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
             <hr className="my-7 border-0 border-t border-leaf/40" />
 
             <footer className="flex flex-wrap gap-3">
-              {/* Замени на <LikeButton />, когда он будет принимать poemId и счётчик */}
-              <span className="glass-pill inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-ink">
-                <HeartIcon className="h-4 w-4 text-berry" />
-                {formatCount(poem.stats.likes)} likes
-              </span>
+              {/* Лайкать можно только опубликованный стих; у черновика/скрытого — просто число */}
+              {isPublished ? (
+                <LikeButton
+                  poemId={poem.id}
+                  initialLiked={isLiked}
+                  initialCount={poem.stats.likes}
+                  signedIn={!!viewer}
+                />
+              ) : (
+                <span className="glass-pill inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-ink">
+                  <HeartIcon className="h-4 w-4 text-berry" />
+                  {formatCount(poem.stats.likes)} likes
+                </span>
+              )}
               {/* Делиться и жаловаться есть смысл только на опубликованный стих */}
               {isPublished && <ShareButton title={poem.title} />}
               {/* Пожаловаться может только вошедший и не на свой стих */}

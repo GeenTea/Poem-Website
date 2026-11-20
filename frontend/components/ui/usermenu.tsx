@@ -4,6 +4,7 @@ import { User } from "@/types/user"
 import { useState } from "react"
 import { LogoutButton } from "./Logoutbutton"
 import Link from "next/link"
+import { resolveAvatarUrl } from "@/lib/utils"
 
 function getInitials(name: string) {
 return name
@@ -31,7 +32,7 @@ export function UserMenu({ user }: { user: User }){
             >
                 {user.avatarUrl ? (
                   <img
-                    src={user.avatarUrl}
+                    src={resolveAvatarUrl(user.avatarUrl) ?? undefined}
                     alt=""
                     className="size-9 rounded-full object-cover ring-1 ring-[var(--glass-border)]"
                   />

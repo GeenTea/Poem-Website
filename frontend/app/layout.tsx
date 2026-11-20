@@ -22,6 +22,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
   return (
     <html lang="ru" className={`${inter.variable} ${roboto.variable}`}>
+
       <body>
         <Header user={user}></Header>
         {children}

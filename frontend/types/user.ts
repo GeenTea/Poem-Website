@@ -14,3 +14,23 @@ export interface User {
 export function isModerator(user: Pick<User, "role"> | null | undefined) {
   return user?.role === "MODERATOR" || user?.role === "ADMIN";
 }
+
+/** Публичный профиль автора — ответ `GET /users/:username/profile` */
+export interface AuthorProfile {
+  id: string
+  username: string
+  displayName: string | null
+  bio: string | null
+  avatarUrl: string | null
+  createdAt: string
+  stats: {
+    /** Опубликованные стихи */
+    poems: number
+    /** Лайки на опубликованных стихах */
+    likes: number
+    /** Подписаны на автора */
+    followers: number
+    /** Автор подписан */
+    following: number
+  }
+}

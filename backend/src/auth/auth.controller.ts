@@ -13,6 +13,8 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from './guards/auth.guards';
 import { Request } from 'express';
+import { PasswordResetService } from './password-reset.service';
+import { ForgotPasswordDto, ResetPasswordDto, VerifyResetCodeDto } from './dto/password-reset.dto';
 
 export interface JwtPayload{
     sub: string;
@@ -27,7 +29,33 @@ export interface RequestWithUser extends Request{
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService){}
+    constructor(
+        private readonly authService: AuthService,
+        private readonly passwordReset: PasswordResetService,
+    ){}
+
+    // ---------- Восстановление пароля (без входа) ----------
+
+    // Шаг 1: отправить код на почту. Ответ всегда одинаковый — не раскрываем, есть ли аккаунт
+    @HttpCode(HttpStatus.OK)
+    @Post('password/forgot')
+    forgotPassword(@Body() dto: ForgotPasswordDto){
+        return this.passwordReset.forgot(dto.email);
+    }
+
+    // Шаг 2: проверить код → одноразовый resetToken
+    @HttpCode(HttpStatus.OK)
+    @Post('password/verify')
+    verifyResetCode(@Body() dto: VerifyResetCodeDto){
+        return this.passwordReset.verify(dto.email, dto.code);
+    }
+
+    // Шаг 3: новый пароль → новые токены (пользователь сразу вошёл)
+    @HttpCode(HttpStatus.OK)
+    @Post('password/reset')
+    resetPassword(@Body() dto: ResetPasswordDto){
+        return this.passwordReset.reset(dto.resetToken, dto.password);
+    }
 
     @HttpCode(HttpStatus.OK)
     @Post('register')

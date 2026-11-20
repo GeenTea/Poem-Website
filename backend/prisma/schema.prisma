@@ -42,6 +42,7 @@ model User {
 
   poems        Poem[]        @relation("PostAuthor")
   sessions     Session[]
+  passwordResets PasswordReset[]
   comments     Comment[]
   likes        Like[]
   commentLikes CommentLike[]
@@ -251,4 +252,23 @@ model Report {
   @@index([reporterId, createdAt])
   @@index([targetUserId])
   @@unique([reporterId, commentId])
+}
+
+// Восстановление пароля: код из письма (хранится хэш), затем одноразовый resetToken
+model PasswordReset {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  codeHash String
+  attempts Int    @default(0) // неверные попытки ввода кода
+
+  // Выдаётся после верного кода — разрешает один раз сменить пароль
+  resetTokenHash String?   @unique
+
+  expiresAt DateTime
+  usedAt    DateTime? // пароль по этой заявке уже сменён — заявка закрыта
+  createdAt DateTime  @default(now())
+
+  @@index([userId, createdAt])
 }

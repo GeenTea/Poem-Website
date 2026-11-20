@@ -18,8 +18,12 @@ export class PoemsController {
     }
 
     @Get('findall')
-    findAll(@Query('tag') tag?: string, @Query('q') q?: string) {
-        return this.poemsService.findAll(tag, q);
+    findAll(
+        @Query('tag') tag?: string,
+        @Query('q') q?: string,
+        @Query('author') author?: string, // username автора — для страницы профиля
+    ) {
+        return this.poemsService.findAll(tag, q, author);
     }
 
     // Статические пути объявляем раньше путей с :id
