@@ -12,6 +12,7 @@ import { ShareButton } from "@/components/poems/ShareButton";
 import { ReportPoemButton } from "@/components/poems/ReportPoemButton";
 import { PoemActions } from "@/components/poems/PoemActions";
 import { formatCount, formatRelativeDate } from "@/lib/utils";
+import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 
 // Поля, которых может не быть в типе Poem. Если они есть в types/user.ts — этот тип можно убрать.
 type AuthorExtras = {
@@ -28,6 +29,24 @@ type MorePoem = {
 
 const card =
   "auth-card rounded-[28px] bg-[var(--glass)]";
+
+export async function generateMetadata(props: PageProps<"/poems/[id]">): Promise<Metadata> {
+  const { id } = await props.params;
+
+  try {
+    const poem = await getPoemForViewer(id);
+    return {
+      title: poem.title,
+      // Описание для поисковиков и превью ссылки — первая строка стиха
+      description: poem.text.split("\n")[0]?.slice(0, 160),
+    };
+  } catch {
+    // Стиха нет или нет доступа — страница сама покажет notFound(),
+    // а здесь просто нейтральный заголовок
+    return { title: "Poem not found" };
+  }
+}
+
 
 export default async function PoemPage(props: PageProps<"/poems/[id]">) {
   const { id } = await props.params;
