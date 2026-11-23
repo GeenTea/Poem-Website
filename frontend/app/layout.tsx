@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import { getCurrentUser } from "@/lib/auth";
 import {Inter, Roboto} from 'next/font/google'
+import Footer from "@/components/layout/Footer";
 import "./globals.css";
 
 
@@ -26,6 +27,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <Header user={user}></Header>
         {children}
+        <Footer></Footer>
       </body>
     </html>
   );

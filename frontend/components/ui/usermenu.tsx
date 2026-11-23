@@ -5,6 +5,7 @@ import { useState } from "react"
 import { LogoutButton } from "./Logoutbutton"
 import Link from "next/link"
 import { resolveAvatarUrl } from "@/lib/utils"
+import Sidebar from "@/components/layout/Sidebar"
 
 function getInitials(name: string) {
 return name
@@ -45,6 +46,7 @@ export function UserMenu({ user }: { user: User }){
 
 
             {isOpen && <Panel />}
+            <Sidebar user={user} open={isOpen} onClose={() => setIsOpen(false)} />
         </div>
 
     )
@@ -54,7 +56,7 @@ export function UserMenu({ user }: { user: User }){
 
 function Panel(){
   return (
-    <div className="glass-panel absolute right-0 top-full mt-2 w-48 rounded-xl p-3 text-sm text-[var(--ink)] shadow-lg">
+    <div className="bg-[var(--cream)] absolute right-0 top-full mt-2 w-48 rounded-xl p-3 text-sm text-[var(--ink)] shadow-lg hidden md:block">
       <ul className="flex flex-col gap-2">
         <li>
           <Link
