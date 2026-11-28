@@ -200,9 +200,9 @@ export function NotificationList() {
                 <Link
                   href={href}
                   onClick={() => openNotification(n)}
-                  // Непрочитанные чуть светлее (bg-white/40)
+                  // Непрочитанные чуть светлее (bg-surface-faint)
                   className={`focus-ring flex items-start gap-3 rounded-2xl px-3 py-3 transition-colors hover:bg-[var(--glass-hover)] ${
-                    unread ? "bg-white/40" : ""
+                    unread ? "bg-surface-faint" : ""
                   }`}
                 >
                   {/* Аватар того, кто совершил действие */}

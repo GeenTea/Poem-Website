@@ -94,7 +94,7 @@ export function RegisterForm({ next = "/" }: RegisterFormProps) {
             placeholder="Enter display name"
             value={displayName}
             onChange={(event) => setDisplayName(event.target.value)}
-            className="border border-[#2F31221A] rounded-lg py-1.5 px-6 w-full"
+            className="border border-hairline rounded-lg py-1.5 px-6 w-full"
           />
 
           <label htmlFor="username" className="text-[17px]">Username</label>
@@ -105,7 +105,7 @@ export function RegisterForm({ next = "/" }: RegisterFormProps) {
             placeholder="Enter username"
             value={username}
             onChange={(event) => setUserName(event.target.value)}
-            className="border border-[#2F31221A] rounded-lg py-1.5 px-6 w-full"
+            className="border border-hairline rounded-lg py-1.5 px-6 w-full"
           />
 
           <label htmlFor="email" className="text-[17px]">Email address</label>
@@ -116,7 +116,7 @@ export function RegisterForm({ next = "/" }: RegisterFormProps) {
             placeholder="Enter your email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="border border-[#2F31221A] rounded-lg py-1.5 px-6 w-full"
+            className="border border-hairline rounded-lg py-1.5 px-6 w-full"
           />
 
           <div className="flex items-center justify-between">
@@ -132,7 +132,7 @@ export function RegisterForm({ next = "/" }: RegisterFormProps) {
               placeholder="Enter your password"
               value={password}
               onChange={(event)=>setPassword(event.target.value)}
-              className="border border-[#2F31221A] rounded-lg py-1.5 px-6 pr-11  w-full"
+              className="border border-hairline rounded-lg py-1.5 px-6 pr-11  w-full"
             />
             <button 
               type="button"
@@ -159,7 +159,7 @@ export function RegisterForm({ next = "/" }: RegisterFormProps) {
               placeholder="Enter your password"
               value={repeatPassword}
               onChange={(event)=>setRepeatPassword(event.target.value)}
-              className="border border-[#2F31221A] rounded-lg py-1.5 px-6 pr-11  w-full"
+              className="border border-hairline rounded-lg py-1.5 px-6 pr-11  w-full"
             />
             <button 
               type="button"

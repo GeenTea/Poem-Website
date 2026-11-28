@@ -36,7 +36,7 @@ export function Avatar({ name, src, size = "md", className }: AvatarProps) {
       aria-hidden
       className={cn(
         box,
-        "flex shrink-0 items-center justify-center rounded-full bg-[#D9D9D9] font-medium text-ink",
+        "flex shrink-0 items-center justify-center rounded-full bg-avatar-placeholder font-medium text-ink",
         className,
       )}
     >

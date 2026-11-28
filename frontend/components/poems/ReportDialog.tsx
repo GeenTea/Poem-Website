@@ -86,7 +86,7 @@ export function ReportDialog({ title, quote, authorName, onSubmit, onClose }: Pr
         </p>
 
         {/* Цитата — чтобы было видно, на что именно жалоба */}
-        <blockquote className="mt-4 rounded-2xl border-l-2 border-berry/50 bg-white/50 px-4 py-3">
+        <blockquote className="mt-4 rounded-2xl border-l-2 border-berry/50 bg-surface-soft px-4 py-3">
           <p className="line-clamp-3 font-serif italic leading-relaxed text-ink">{quote}</p>
           <footer className="mt-1 text-xs text-ink-muted">— {authorName}</footer>
         </blockquote>
@@ -103,7 +103,7 @@ export function ReportDialog({ title, quote, authorName, onSubmit, onClose }: Pr
           rows={4}
           autoFocus
           placeholder="Spam, insults, something else…"
-          className="mt-1.5 block w-full resize-none rounded-2xl border border-[var(--glass-border)] bg-white/60 px-4 py-3 text-[15px] leading-relaxed text-ink placeholder:italic placeholder:text-ink-muted/70 focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40"
+          className="mt-1.5 block w-full resize-none rounded-2xl border border-[var(--glass-border)] bg-input-bg px-4 py-3 text-[15px] leading-relaxed text-ink placeholder:italic placeholder:text-ink-muted/70 focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40"
         />
 
         <div className="mt-1.5 flex items-start justify-between gap-3 text-xs">

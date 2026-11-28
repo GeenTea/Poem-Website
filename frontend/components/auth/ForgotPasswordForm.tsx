@@ -1,19 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState, type ClipboardEvent, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EyeClosed, EyeIcon } from "lucide-react";
+import { CODE_LENGTH, CodeInput, emptyCode } from "@/components/auth/CodeInput";
 
 type Step = "email" | "code" | "password";
 
-const CODE_LENGTH = 6;
 const RESEND_SECONDS = 60; // как пауза между письмами на бэкенде
 const PASSWORD_MIN = 6;
 const PASSWORD_MAX = 128;
 
 const inputClass =
-  "w-full rounded-lg border border-[#2F31221A] bg-white/60 px-5 py-2.5 text-ink focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40";
+  "w-full rounded-lg border border-hairline bg-input-bg px-5 py-2.5 text-ink focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40";
 const primaryButton =
   "mt-2 w-full rounded-2xl bg-[var(--berry)] py-4 text-[18px] font-bold text-amber-50 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50";
 
@@ -216,44 +216,8 @@ function CodeStep({
   onChangeEmail: () => void;
   hasError: boolean;
 }) {
-  const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
-  const inputs = useRef<Array<HTMLInputElement | null>>([]);
+  const [digits, setDigits] = useState<string[]>(emptyCode);
   const code = digits.join("");
-
-  // Записать цифры начиная с позиции index; когда все 6 на месте — сразу проверяем
-  function fill(index: number, value: string) {
-    const clean = value.replace(/\D/g, "").slice(0, CODE_LENGTH - index);
-    if (!clean) return;
-    const next = [...digits];
-    for (let i = 0; i < clean.length; i++) next[index + i] = clean[i];
-    setDigits(next);
-
-    const last = Math.min(index + clean.length, CODE_LENGTH - 1);
-    inputs.current[last]?.focus();
-    if (next.every(Boolean)) onVerify(next.join(""));
-  }
-
-  function handleKeyDown(index: number, e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Backspace") {
-      e.preventDefault();
-      const next = [...digits];
-      if (next[index]) {
-        next[index] = "";
-      } else if (index > 0) {
-        next[index - 1] = "";
-        inputs.current[index - 1]?.focus();
-      }
-      setDigits(next);
-    }
-    if (e.key === "ArrowLeft" && index > 0) inputs.current[index - 1]?.focus();
-    if (e.key === "ArrowRight" && index < CODE_LENGTH - 1) inputs.current[index + 1]?.focus();
-  }
-
-  // Вставка всего кода из буфера (Ctrl+V в любую клетку)
-  function handlePaste(index: number, e: ClipboardEvent<HTMLInputElement>) {
-    e.preventDefault();
-    fill(index, e.clipboardData.getData("text"));
-  }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -261,8 +225,7 @@ function CodeStep({
   }
 
   function resend() {
-    setDigits(Array(CODE_LENGTH).fill(""));
-    inputs.current[0]?.focus();
+    setDigits(emptyCode());
     onResend();
   }
 
@@ -274,31 +237,14 @@ function CodeStep({
         minutes.
       </p>
 
-      <fieldset className="flex justify-center gap-2 sm:gap-3">
-        <legend className="sr-only">6-digit code</legend>
-        {digits.map((digit, i) => (
-          <input
-            key={i}
-            ref={(el) => {
-              inputs.current[i] = el;
-            }}
-            value={digit}
-            onChange={(e) => fill(i, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(i, e)}
-            onPaste={(e) => handlePaste(i, e)}
-            onFocus={(e) => e.target.select()}
-            inputMode="numeric"
-            autoComplete={i === 0 ? "one-time-code" : "off"}
-            autoFocus={i === 0}
-            maxLength={CODE_LENGTH}
-            aria-label={`Digit ${i + 1}`}
-            disabled={pending}
-            className={`size-12 rounded-xl border bg-white/60 text-center font-mono text-2xl text-ink focus:outline-none focus:ring-2 sm:size-14 ${
-              hasError ? "border-[var(--berry)] focus:ring-berry/30" : "border-[#2F31221A] focus:border-leaf-deep focus:ring-leaf/40"
-            }`}
-          />
-        ))}
-      </fieldset>
+      <CodeInput
+        value={digits}
+        onChange={setDigits}
+        onComplete={onVerify}
+        disabled={pending}
+        hasError={hasError}
+        autoFocus
+      />
 
       <button type="submit" disabled={pending || code.length !== CODE_LENGTH} className={primaryButton}>
         {pending ? "Checking…" : "Verify code"}

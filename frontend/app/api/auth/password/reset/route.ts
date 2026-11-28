@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { clientHeaders } from "../../client-headers";
 
 // Шаг 3 восстановления пароля. Свой обработчик (а не общий прокси), потому что
 // бэкенд в ответ отдаёт токены — их нужно положить в httpOnly-cookie, как при входе.
@@ -9,7 +10,7 @@ export async function POST(request: Request) {
 
   const response = await fetch(`${process.env.API_URL}/auth/password/reset`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...clientHeaders(request) },
     body: JSON.stringify(body),
   });
 

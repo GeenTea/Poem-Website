@@ -346,7 +346,7 @@ export function PoemEditor(props: Props) {
             </h2>
             <p className="mt-4 font-serif text-lg italic text-ink-muted">by {authorName}</p>
             <hr className="my-8 border-0 border-t border-leaf/40" />
-            <div className="whitespace-pre-line break-words px-1 font-serif text-xl leading-[2.1] text-ink sm:px-2">
+            <div className="whitespace-pre-line break-words px-1 font-serif poem-text text-ink sm:px-2">
               {content.trim() ? content : <span className="italic text-ink-muted/60">Nothing written yet.</span>}
             </div>
             {selectedTags.length > 0 && (
@@ -399,7 +399,7 @@ export function PoemEditor(props: Props) {
               placeholder={"Begin anywhere.\nThe line breaks are yours."}
               rows={10}
               aria-describedby="poem-meta"
-              className="mt-8 block min-h-[20rem] w-full resize-none overflow-hidden bg-transparent font-serif text-xl leading-[2.1] text-ink placeholder:text-ink-muted/50 focus:outline-none"
+              className="mt-8 block min-h-[20rem] w-full resize-none overflow-hidden bg-transparent font-serif poem-text text-ink placeholder:text-ink-muted/50 focus:outline-none"
             />
           </div>
         )}

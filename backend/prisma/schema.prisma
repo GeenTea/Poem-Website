@@ -43,6 +43,7 @@ model User {
   poems        Poem[]        @relation("PostAuthor")
   sessions     Session[]
   passwordResets PasswordReset[]
+  emailChangeRequests EmailChangeRequest[]
   comments     Comment[]
   likes        Like[]
   commentLikes CommentLike[]
@@ -97,7 +98,13 @@ model Session {
   createdAt DateTime  @default(now())
   revokedAt DateTime?
 
+  // Устройство, с которого вошли (для списка «Активные сеансы»)
+  userAgent  String?
+  ip         String?
+  lastUsedAt DateTime @default(now())
+
   @@index([userId])
+  @@index([refreshTokenHash]) // поиск сессии по refresh-токену при обновлении
 }
 
 model Comment {
@@ -268,6 +275,23 @@ model PasswordReset {
 
   expiresAt DateTime
   usedAt    DateTime? // пароль по этой заявке уже сменён — заявка закрыта
+  createdAt DateTime  @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// Смена почты: код на текущую почту (хранится хэш), затем одноразовый токен на смену адреса
+model EmailChangeRequest {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  codeHash String
+  attempts Int    @default(0) // неверные попытки ввода кода
+
+  tokenHash String?   @unique // выдаётся после верного кода
+  expiresAt DateTime
+  usedAt    DateTime? // почта по этой заявке уже сменена
   createdAt DateTime  @default(now())
 
   @@index([userId, createdAt])

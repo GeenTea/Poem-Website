@@ -6,6 +6,8 @@ import { UsersModule } from 'src/users/users.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { MailModule } from 'src/mail/mail.module';
 import { PasswordResetService } from './password-reset.service';
+import { SessionsController } from './sessions/sessions.controller';
+import { SessionsService } from './sessions/sessions.service';
 @Module({
     imports: [
         UsersModule,
@@ -19,8 +21,8 @@ import { PasswordResetService } from './password-reset.service';
         PrismaModule,
         MailModule,
     ],
-    controllers:[AuthController],
-    providers:[AuthService, PasswordResetService],
+    controllers:[AuthController, SessionsController],
+    providers:[AuthService, PasswordResetService, SessionsService],
 })
 export class AuthModule {
 }

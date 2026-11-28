@@ -3,6 +3,7 @@ import Header from "@/components/layout/Header";
 import { getCurrentUser } from "@/lib/auth";
 import {Inter, Roboto} from 'next/font/google'
 import Footer from "@/components/layout/Footer";
+import { getPreferences } from "@/lib/preferences";
 import "./globals.css";
 
 
@@ -19,10 +20,17 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const user = await getCurrentUser()
+  // Пользователь и настройки оформления (тема, размер стихов) читаются параллельно
+  const [user, { theme, poemSize }] = await Promise.all([getCurrentUser(), getPreferences()]);
 
+  // data-theme и data-poem-size ставит сервер — страница сразу приходит в нужной теме, без мигания
   return (
-    <html lang="ru" className={`${inter.variable} ${roboto.variable}`}>
+    <html
+      lang="ru"
+      className={`${inter.variable} ${roboto.variable}`}
+      data-theme={theme}
+      data-poem-size={poemSize}
+    >
 
       <body>
         <Header user={user}></Header>

@@ -447,7 +447,7 @@ function CommentForm({ onSubmit, onCancel, initialValue = "", submitLabel, place
         autoFocus={autoFocus}
         rows={3}
         aria-label={placeholder ?? submitLabel}
-        className="block w-full resize-none rounded-2xl border border-[var(--glass-border)] bg-white/50 px-4 py-3 font-serif text-[17px] leading-relaxed text-ink shadow-[var(--glass-highlight)] placeholder:italic placeholder:text-ink-muted/70 focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40"
+        className="block w-full resize-none rounded-2xl border border-[var(--glass-border)] bg-surface-soft px-4 py-3 font-serif text-[17px] leading-relaxed text-ink shadow-[var(--glass-highlight)] placeholder:italic placeholder:text-ink-muted/70 focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40"
       />
       <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
         {hint && (

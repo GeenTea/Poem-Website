@@ -80,7 +80,7 @@ export function LoginForm({ next = "/" }: LoginFormProps) {
             placeholder="Enter your email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="border border-[#2F31221A] rounded-lg py-1.5 px-6 w-full"
+            className="border border-hairline rounded-lg py-1.5 px-6 w-full"
           />
 
           <div className="flex items-center justify-between">
@@ -97,7 +97,7 @@ export function LoginForm({ next = "/" }: LoginFormProps) {
               placeholder="Enter your password"
               value={password}
               onChange={(event)=>setPassword(event.target.value)}
-              className="border border-[#2F31221A] rounded-lg py-1.5 px-6 pr-11  w-full"
+              className="border border-hairline rounded-lg py-1.5 px-6 pr-11  w-full"
             />
             <button 
               type="button"

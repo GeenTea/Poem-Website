@@ -1,14 +1,21 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import * as argon2 from 'argon2';
-import { createHash, createHmac, randomBytes, randomInt, timingSafeEqual } from 'node:crypto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MailService } from 'src/mail/mail.service';
 import { passwordChangedEmail, resetCodeEmail } from 'src/mail/templates';
 import { AuthService } from './auth.service';
-
-const CODE_TTL_MINUTES = 15;      // сколько живёт код и resetToken
-const MAX_ATTEMPTS = 5;           // неверных вводов кода, потом код сгорает
-const RESEND_COOLDOWN_MS = 60_000; // не чаще одного письма в минуту
+import type { ClientInfo } from './client-info';
+import {
+    CODE_TTL_MINUTES,
+    MAX_CODE_ATTEMPTS,
+    RESEND_COOLDOWN_MS,
+    codeMatches,
+    expiresFromNow,
+    generateCode,
+    generateToken,
+    hashCode,
+    sha256,
+} from 'src/common/codes';
 
 // Одна и та же ошибка для «нет такого email», «неверный код», «код истёк», «попытки кончились»:
 // по ответу нельзя понять, что именно не так — и есть ли вообще такой аккаунт.
@@ -46,14 +53,14 @@ export class PasswordResetService {
         if (last && Date.now() - last.createdAt.getTime() < RESEND_COOLDOWN_MS) return { ok: true };
 
         // Новый код отменяет все прежние незавершённые заявки
-        const code = randomInt(0, 1_000_000).toString().padStart(6, '0');
+        const code = generateCode();
         await this.prisma.$transaction([
             this.prisma.passwordReset.deleteMany({ where: { userId: user.id, usedAt: null } }),
             this.prisma.passwordReset.create({
                 data: {
                     userId: user.id,
-                    codeHash: this.hashCode(code),
-                    expiresAt: new Date(Date.now() + CODE_TTL_MINUTES * 60_000),
+                    codeHash: hashCode(code),
+                    expiresAt: expiresFromNow(),
                 },
             }),
         ]);
@@ -80,22 +87,22 @@ export class PasswordResetService {
         if (!reset || reset.expiresAt < new Date()) throw new BadRequestException(INVALID_CODE);
 
         // Сначала атомарно «тратим» попытку, потом сравниваем. Так даже параллельные запросы
-        // не смогут сделать больше MAX_ATTEMPTS проверок одного кода.
+        // не смогут сделать больше MAX_CODE_ATTEMPTS проверок одного кода.
         const { count } = await this.prisma.passwordReset.updateMany({
-            where: { id: reset.id, attempts: { lt: MAX_ATTEMPTS } },
+            where: { id: reset.id, attempts: { lt: MAX_CODE_ATTEMPTS } },
             data: { attempts: { increment: 1 } },
         });
-        if (count === 0 || !this.codeMatches(code, reset.codeHash)) {
+        if (count === 0 || !codeMatches(code, reset.codeHash)) {
             throw new BadRequestException(INVALID_CODE);
         }
 
         // Код верный → одноразовый токен на смену пароля (в БД — только его хэш)
-        const resetToken = randomBytes(32).toString('base64url');
+        const resetToken = generateToken();
         await this.prisma.passwordReset.update({
             where: { id: reset.id },
             data: {
                 resetTokenHash: sha256(resetToken),
-                expiresAt: new Date(Date.now() + CODE_TTL_MINUTES * 60_000),
+                expiresAt: expiresFromNow(),
             },
         });
 
@@ -103,7 +110,7 @@ export class PasswordResetService {
     }
 
     // ---------- Шаг 3 ----------
-    async reset(resetToken: string, password: string) {
+    async reset(resetToken: string, password: string, client: ClientInfo) {
         const reset = await this.prisma.passwordReset.findUnique({
             where: { resetTokenHash: sha256(resetToken) },
             include: { user: { select: { id: true, email: true, username: true, displayName: true } } },
@@ -133,7 +140,7 @@ export class PasswordResetService {
         });
 
         // Новая сессия на этом устройстве — пользователь сразу вошёл
-        const tokens = await this.auth.issueTokens(reset.userId);
+        const tokens = await this.auth.issueTokens(reset.userId, client);
 
         const { user } = reset;
         this.mail
@@ -152,21 +159,4 @@ export class PasswordResetService {
             select: { id: true, email: true, username: true, displayName: true },
         });
     }
-
-    // HMAC с секретом сервера: даже если база утечёт, 6-значные коды нельзя перебрать
-    // без секрета (простой sha256 из миллиона вариантов подбирается за секунду).
-    private hashCode(code: string) {
-        return createHmac('sha256', process.env.JWT_SECRET ?? '').update(code).digest('hex');
-    }
-
-    // Сравнение за постоянное время — по скорости ответа нельзя угадать совпавшие символы
-    private codeMatches(code: string, codeHash: string) {
-        const a = Buffer.from(this.hashCode(code), 'hex');
-        const b = Buffer.from(codeHash, 'hex');
-        return a.length === b.length && timingSafeEqual(a, b);
-    }
-}
-
-function sha256(value: string) {
-    return createHash('sha256').update(value).digest('hex');
 }

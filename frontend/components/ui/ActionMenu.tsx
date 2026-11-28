@@ -52,7 +52,7 @@ export function ActionMenu({ items, label = "Actions" }: { items: ActionMenuItem
         <ul
           id={menuId}
           role="menu"
-          className="absolute right-0 top-full z-20 mt-1 min-w-36 overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-white/95 py-1 shadow-lg backdrop-blur"
+          className="absolute right-0 top-full z-20 mt-1 min-w-36 overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-popover py-1 shadow-lg backdrop-blur"
         >
           {items.map((item) => (
             <li key={item.label} role="none">

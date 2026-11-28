@@ -57,7 +57,7 @@ export default function Sidebar({ user, open, onClose }: SidebarProps) {
       aria-label="Menu"
       // display (flex) задаём НЕ здесь, а на обёртке внутри: класс flex на <dialog>
       // перебил бы display: none у закрытого окна, и оно было бы видно всегда
-      className="modal m-0 h-dvh max-h-none w-screen max-w-none bg-[var(--cream)] p-0 text-ink"
+      className="modal m-0 h-dvh max-h-none w-screen max-w-none bg-menu p-0 text-ink"
     >
       <div className="flex min-h-full flex-col gap-6 px-5 pb-8 pt-5">
         {/* ---------- Верхняя строка ---------- */}
@@ -75,7 +75,7 @@ export default function Sidebar({ user, open, onClose }: SidebarProps) {
 
         {/* ---------- Карточка профиля ---------- */}
         <div className="auth-card flex flex-col items-center rounded-[24px] bg-[var(--glass)] px-6 py-7 text-center">
-          <Avatar name={name} src={user.avatarUrl} size="xl" className="ring-4 ring-white/70" />
+          <Avatar name={name} src={user.avatarUrl} size="xl" className="ring-4 ring-halo" />
           <p className="mt-4 font-serif text-2xl leading-tight">{name}</p>
           <p className="mt-1 text-sm text-ink-muted">@{user.username}</p>
         </div>

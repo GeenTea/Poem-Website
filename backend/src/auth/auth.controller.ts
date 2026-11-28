@@ -12,19 +12,16 @@ import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from './guards/auth.guards';
-import { Request } from 'express';
+import type { Request } from 'express';
+import type { RequestWithUser } from './types/request-with-user';
+import { getClientInfo } from './client-info';
+import { RefreshDto } from './dto/refresh.dto';
+
+// Раньше типы жили здесь — оставляем реэкспорт для старых импортов (likes.controller)
+export type { JwtPayload, RequestWithUser } from './types/request-with-user';
 import { PasswordResetService } from './password-reset.service';
 import { ForgotPasswordDto, ResetPasswordDto, VerifyResetCodeDto } from './dto/password-reset.dto';
 
-export interface JwtPayload{
-    sub: string;
-    email: string;
-    sessionId: string;
-}
-
-export interface RequestWithUser extends Request{
-    user: JwtPayload
-}
 
 
 @Controller('auth')
@@ -53,20 +50,27 @@ export class AuthController {
     // Шаг 3: новый пароль → новые токены (пользователь сразу вошёл)
     @HttpCode(HttpStatus.OK)
     @Post('password/reset')
-    resetPassword(@Body() dto: ResetPasswordDto){
-        return this.passwordReset.reset(dto.resetToken, dto.password);
+    resetPassword(@Body() dto: ResetPasswordDto, @Req() req: Request){
+        return this.passwordReset.reset(dto.resetToken, dto.password, getClientInfo(req));
     }
 
     @HttpCode(HttpStatus.OK)
     @Post('register')
-    register(@Body() dto: RegisterDto){
-        return this.authService.register(dto);
+    register(@Body() dto: RegisterDto, @Req() req: Request){
+        return this.authService.register(dto, getClientInfo(req));
     }
 
     @HttpCode(HttpStatus.OK)
     @Post('login')
-    login(@Body() dto: LoginDto){
-        return this.authService.login(dto)
+    login(@Body() dto: LoginDto, @Req() req: Request){
+        return this.authService.login(dto, getClientInfo(req))
+    }
+
+    // Новый accessToken по refreshToken (его присылает proxy.ts фронтенда, когда старый истекает)
+    @HttpCode(HttpStatus.OK)
+    @Post('refresh')
+    refresh(@Body() dto: RefreshDto){
+        return this.authService.refresh(dto.refreshToken)
     }
 
     @HttpCode(HttpStatus.OK)

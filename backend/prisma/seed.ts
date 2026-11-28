@@ -19,6 +19,33 @@ const tags = [
   { slug: 'nostalgia', name: 'Nostalgia' },
   { slug: 'war', name: 'War' },
   { slug: 'city', name: 'City' },
+  { slug: 'memory', name: 'Memory' },
+  { slug: 'home', name: 'Home' },
+  { slug: 'family', name: 'Family' },
+  { slug: 'childhood', name: 'Childhood' },
+  { slug: 'friendship', name: 'Friendship' },
+  { slug: 'hope', name: 'Hope' },
+  { slug: 'grief', name: 'Grief' },
+  { slug: 'faith', name: 'Faith' },
+  { slug: 'freedom', name: 'Freedom' },
+  { slug: 'dreams', name: 'Dreams' },
+  { slug: 'time', name: 'Time' },
+  { slug: 'silence', name: 'Silence' },
+  { slug: 'music', name: 'Music' },
+  { slug: 'travel', name: 'Travel' },
+  { slug: 'letters', name: 'Letters' },
+  { slug: 'insomnia', name: 'Insomnia' },
+  // Время суток, погода, времена года
+  { slug: 'night', name: 'Night' },
+  { slug: 'morning', name: 'Morning' },
+  { slug: 'rain', name: 'Rain' },
+  { slug: 'sea', name: 'Sea' },
+  { slug: 'spring', name: 'Spring' },
+  { slug: 'autumn', name: 'Autumn' },
+  { slug: 'winter', name: 'Winter' },
+  // Формы
+  { slug: 'haiku', name: 'Haiku' },
+  { slug: 'free-verse', name: 'Free verse' },
 ];
 
 const users = [
@@ -42,7 +69,7 @@ const poems: SeedPoem[] = [
   {
     title: 'Лампа в коридоре',
     author: 'mira',
-    tags: ['loneliness', 'nostalgia'],
+    tags: ['loneliness', 'nostalgia', 'home', 'night', 'memory'],
     status: 'PUBLISHED',
     daysAgo: 3,
     content: `Ты оставил одну лампу —
@@ -55,7 +82,7 @@ const poems: SeedPoem[] = [
   {
     title: 'Рецепт долгой дороги',
     author: 'eli',
-    tags: ['romance', 'philosophy'],
+    tags: ['romance', 'philosophy', 'travel', 'time'],
     status: 'PUBLISHED',
     daysAgo: 5,
     content: `Возьми одно шоссе, слегка посоли. Добавь радио, которое спорит с погодой. Мешай, пока город за спиной не станет точкой, а ты — тем, кем был до всех адресов.`,
@@ -63,7 +90,7 @@ const poems: SeedPoem[] = [
   {
     title: 'Мотыльки у окна',
     author: 'hana',
-    tags: ['nature', 'loneliness'],
+    tags: ['nature', 'loneliness', 'night', 'insomnia'],
     status: 'PUBLISHED',
     daysAgo: 6,
     content: `всю ночь мягкие
@@ -73,7 +100,7 @@ const poems: SeedPoem[] = [
   {
     title: 'Ночная смена',
     author: 'eli',
-    tags: ['city'],
+    tags: ['city', 'night', 'insomnia', 'music'],
     status: 'PUBLISHED',
     daysAgo: 1,
     content: `Хвала тем, кто держит город открытым,
@@ -84,7 +111,7 @@ const poems: SeedPoem[] = [
   {
     title: 'Кухонный псалом',
     author: 'mira',
-    tags: ['nostalgia'],
+    tags: ['nostalgia', 'home', 'family', 'faith'],
     status: 'PUBLISHED',
     daysAgo: 8,
     content: `Благословен лук, терпеливый в ящике.
@@ -96,7 +123,7 @@ const poems: SeedPoem[] = [
   {
     title: 'Письма с ветром',
     author: 'tomas',
-    tags: ['nostalgia', 'loneliness'],
+    tags: ['nostalgia', 'loneliness', 'letters', 'memory', 'autumn'],
     status: 'PUBLISHED',
     daysAgo: 10,
     content: `Ветер приносит чужую пыль
@@ -108,7 +135,7 @@ const poems: SeedPoem[] = [
   {
     title: 'Сад после дождя',
     author: 'hana',
-    tags: ['nature'],
+    tags: ['nature', 'rain', 'spring', 'hope', 'morning'],
     status: 'PUBLISHED',
     daysAgo: 0,
     content: `после дождя
@@ -118,7 +145,7 @@ const poems: SeedPoem[] = [
   {
     title: 'Остановка',
     author: 'tomas',
-    tags: ['city', 'romance'],
+    tags: ['city', 'romance', 'travel', 'dreams'],
     status: 'PUBLISHED',
     daysAgo: 14,
     content: `Мы ждали один автобус
@@ -126,11 +153,11 @@ const poems: SeedPoem[] = [
 С тех пор я всегда
 смотрю в окна встречных.`,
   },
-  // Проверка обрезки: длинный заголовок, длинный текст, все теги сразу
+  // Проверка обрезки: длинный заголовок, длинный текст и много тегов (первые 7 — всех уже слишком много)
   {
     title: 'Очень длинное название стихотворения, которое не должно ломать карточку',
     author: 'mira',
-    tags: tags.map((t) => t.slug),
+    tags: tags.slice(0, 7).map((t) => t.slug),
     status: 'PUBLISHED',
     daysAgo: 2,
     content: Array.from({ length: 30 }, (_, i) => `Строка ${i + 1}: проверяем, что текст обрезается`).join('\n'),
@@ -139,7 +166,7 @@ const poems: SeedPoem[] = [
   {
     title: 'Черновик (не должен быть виден)',
     author: 'mira',
-    tags: ['philosophy'],
+    tags: ['philosophy', 'silence'],
     status: 'DRAFT',
     daysAgo: 0,
     content: 'Если вы видите это на главной — фильтр по статусу не работает.',

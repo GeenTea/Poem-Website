@@ -56,7 +56,7 @@ export function UserMenu({ user }: { user: User }){
 
 function Panel(){
   return (
-    <div className="bg-[var(--cream)] absolute right-0 top-full mt-2 w-48 rounded-xl p-3 text-sm text-[var(--ink)] shadow-lg hidden md:block">
+    <div className="bg-menu absolute right-0 top-full mt-2 w-48 rounded-xl p-3 text-sm text-[var(--ink)] shadow-lg hidden md:block">
       <ul className="flex flex-col gap-2">
         <li>
           <Link

@@ -140,7 +140,7 @@ export default async function PoemPage(props: PageProps<"/poems/[id]">) {
 
             <hr className="my-8 border-0 border-t border-leaf/40" />
 
-            <div className="whitespace-pre-line break-words px-1 font-serif text-xl leading-[2.1] text-ink sm:px-2">
+            <div className="whitespace-pre-line break-words px-1 font-serif poem-text text-ink sm:px-2">
               {poem.text}
             </div>
 

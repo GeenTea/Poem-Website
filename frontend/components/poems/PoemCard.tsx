@@ -40,7 +40,7 @@ export function PoemCard({ poem, viewer = null }: PoemCardProps) {
         </div>
       </div>
 
-      <p className="mt-3 whitespace-pre-line text-sm leading-7 text-ink-muted line-clamp-4">
+      <p className="mt-3 whitespace-pre-line poem-excerpt text-ink-muted line-clamp-4">
         {text}
       </p>
 
@@ -54,7 +54,7 @@ export function PoemCard({ poem, viewer = null }: PoemCardProps) {
         </ul>
       )}
 
-      <hr className="mt-5 border-t border-black/25" />
+      <hr className="mt-5 border-t border-rule" />
 
       <footer className="mt-4 flex items-center justify-between gap-3">
         <Link
@@ -63,7 +63,7 @@ export function PoemCard({ poem, viewer = null }: PoemCardProps) {
         >
           <Avatar name={author.displayName} src={author.avatarUrl} />
           <span className="min-w-0">
-            <span className="block truncate text-base text-black group-hover:underline">
+            <span className="block truncate text-base text-ink-strong group-hover:underline">
               {author.displayName}
             </span>
             <span className="block text-xs text-ink-muted">

@@ -108,7 +108,7 @@ export default async function AuthorPage(props: PageProps<"/authors/[username]">
           {stats.map((s) => (
             <div
               key={s.label}
-              className="rounded-2xl border border-[var(--glass-border)] bg-white/45 px-4 py-3 shadow-[var(--glass-highlight)] sm:px-5 sm:py-4"
+              className="rounded-2xl border border-[var(--glass-border)] bg-surface px-4 py-3 shadow-[var(--glass-highlight)] sm:px-5 sm:py-4"
             >
               <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-ink-muted">
                 {s.label}

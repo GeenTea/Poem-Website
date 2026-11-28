@@ -152,7 +152,7 @@ export function ProfileEditor({ profile }: Props) {
           ) : (
             <Avatar src={profile.avatarUrl} name={initialName} size="xl" />
           )}
-          <span className="absolute inset-0 grid place-items-center bg-ink/45 text-white transition-colors group-hover:bg-ink/60">
+          <span className="absolute inset-0 grid place-items-center bg-scrim/45 text-white transition-colors group-hover:bg-scrim/60">
             <CameraIcon className="h-7 w-7" />
           </span>
         </button>
@@ -188,7 +188,7 @@ export function ProfileEditor({ profile }: Props) {
           maxLength={DISPLAY_NAME_MAX_LENGTH}
           autoFocus
           aria-label="Display name"
-          className="block w-full rounded-2xl border border-[var(--glass-border)] bg-white/60 px-4 py-2.5 font-serif text-2xl text-ink focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40"
+          className="block w-full rounded-2xl border border-[var(--glass-border)] bg-input-bg px-4 py-2.5 font-serif text-2xl text-ink focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40"
         />
       </EditableField>
 
@@ -217,7 +217,7 @@ export function ProfileEditor({ profile }: Props) {
           autoFocus
           aria-label="Bio"
           placeholder="What do you write about?"
-          className="block w-full resize-none rounded-2xl border border-[var(--glass-border)] bg-white/60 px-4 py-3 font-serif text-lg leading-relaxed text-ink placeholder:italic placeholder:text-ink-muted/70 focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40"
+          className="block w-full resize-none rounded-2xl border border-[var(--glass-border)] bg-input-bg px-4 py-3 font-serif text-lg leading-relaxed text-ink placeholder:italic placeholder:text-ink-muted/70 focus:border-leaf-deep focus:outline-none focus:ring-2 focus:ring-leaf/40"
         />
       </EditableField>
 

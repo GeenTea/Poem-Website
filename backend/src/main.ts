@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { UPLOADS_DIR } from './common/uploads';
+import { env } from 'node:process';
 
 async function bootstrap() {
   // NestExpressApplication — чтобы был useStaticAssets
@@ -21,7 +22,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin:['http://localhost:3000'],
+    origin:env.FRONTEND_URL ?? 'http://localhost:3000',
     credentials:true
   })
 

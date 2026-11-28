@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { clientHeaders } from "../client-headers";
 
 export async function POST(request: Request) {
     const body = await request.json()
@@ -7,6 +8,7 @@ export async function POST(request: Request) {
         method:'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...clientHeaders(request),
         },
         body:JSON.stringify(body)
     })

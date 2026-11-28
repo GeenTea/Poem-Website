@@ -52,3 +52,36 @@ export function passwordChangedEmail(to: string, name: string, when: Date): Mail
 function escapeHtml(s: string) {
     return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 }
+
+export function emailChangeCodeEmail(to: string, name: string, code: string, minutes: number): MailMessage {
+    return {
+        to,
+        subject: `${code} is your Poem Nest email change code`,
+        text:
+            `Hi ${name},\n\nYour code to change the email address of your account is: ${code}\n\n` +
+            `It expires in ${minutes} minutes. If you didn't ask for this, someone may know your password — change it now.`,
+        html: layout(
+            'Change your email',
+            `<p style="margin:0 0 16px;font-size:16px;line-height:1.6">Hi ${escapeHtml(name)}, use this code to confirm it's you and change your email address:</p>
+<p style="margin:0 0 16px;font-size:34px;letter-spacing:10px;font-family:'Courier New',monospace;color:${COLORS.berry}">${code}</p>
+<p style="margin:0;font-size:14px;line-height:1.6;color:${COLORS.muted}">It expires in ${minutes} minutes. If you didn't ask for this, someone may know your password — change it right away.</p>`,
+        ),
+    };
+}
+
+/** Уходит на СТАРУЮ почту: владелец узнает, если адрес сменил кто-то другой */
+export function emailChangedEmail(to: string, name: string, newEmailMasked: string, when: Date): MailMessage {
+    const time = when.toUTCString();
+    return {
+        to,
+        subject: 'Your Poem Nest email was changed',
+        text:
+            `Hi ${name},\n\nThe email address of your Poem Nest account was changed to ${newEmailMasked} on ${time}.\n\n` +
+            `If this wasn't you, contact us right away.`,
+        html: layout(
+            'Your email was changed',
+            `<p style="margin:0 0 16px;font-size:16px;line-height:1.6">Hi ${escapeHtml(name)}, the email address of your account was changed to <b>${escapeHtml(newEmailMasked)}</b> on <b>${time}</b>.</p>
+<p style="margin:0;font-size:14px;line-height:1.6;color:${COLORS.muted}">This address will no longer receive messages for the account. If this wasn't you, contact us right away — all other sessions have been signed out.</p>`,
+        ),
+    };
+}
